@@ -1,0 +1,320 @@
+,index,id,spotify_id,artist_name,last_fm_gender,wikipedia_gender,gender
+0,0.0,3170.0,7c0XG5cIJTrrAgEC3ULPiq,Ty Dolla $ign,m,m,m
+1,1.0,3172.0,3hcs9uc56yIGFCSy9leWe7,Lil Durk,m,m,m
+2,2.0,3174.0,2LIk90788K0zvyj2JJVwkJ,Jack Harlow,m,m,m
+3,3.0,3176.0,6aLoJJxz7MV2iZ423S8tJC,Doe Boy,m,m,m
+4,4.0,3178.0,6EPlBSH2RSiettczlz7ihV,Sleepy Hallow,m,m,m
+5,5.0,3180.0,78u1jLVBjPSXQVmHBV43yG,Alborosie,m,m,m
+6,6.0,3182.0,2qoQgPAilErOKCwE2Y8wOG,GloRilla,f,f,f
+7,7.0,3184.0,4kYSro6naA4h99UJvo89HB,Cardi B,f,f,f
+8,8.0,3186.0,0Njy6yR9LykNKYg9yE23QN,Nardo Wick,m,m,m
+9,9.0,3188.0,0Y4inQK6OespitzD6ijMwb,Freddie Gibbs,m,m,m
+10,10.0,3190.0,0RESbWvOMyua0yuyVrztJ5,Key Glock,m,m,m
+11,11.0,3191.0,4Ga1P7PMIsmqEZqhYZQgDo,Lil Tecca,m,m,m
+12,12.0,3193.0,0QHgL1lAIqAw0HtD7YldmP,DJ Khaled,m,m,m
+13,13.0,3195.0,3TVXtAsR1Inumwj472S9r4,Drake,m,d,m
+14,14.0,3197.0,0hCNtLu0JehylgoiP8L4Gh,Nicki Minaj,f,f,f
+15,15.0,3199.0,7rkW85dBwwrJtlHRDkJDAC,NAV,m,m,m
+16,16.0,3201.0,0Y5tJX1MQlPlqiwlOH1tJY,Travis Scott,m,m,m
+17,17.0,3203.0,41I5xI04kixwmonDBl0Sda,King Combs,x,m,m
+18,18.0,3205.0,0A0FS04o6zMoto8OKPsDwY,YG,m,m,m
+19,19.0,2370.0,246dkjvS1zLTtiykXe5h60,Post Malone,m,m,m
+20,20.0,2372.0,6jGMq4yGs7aQzuGsMgVgZR,Lil Tjay,m,m,m
+21,21.0,2374.0,6AUl0ykLLpvTktob97x9hO,Tee Grizzley,m,m,m
+22,22.0,,0iEtIxbK0KxaSlF7G42ZOp,Metro Boomin,m,m,m
+23,23.0,,1RyvyyTE3xzB2ZywiAwp0i,Future,m,n,m
+24,24.0,,7bXgB6jMjp9ATFy66eO08Z,Chris Brown,m,m,m
+25,25.0,,1URnnhqYAYcrqrcwql10ft,21 Savage,m,m,m
+26,26.0,,0VRj0yCOv2FXJNP47XQnx5,Quavo,m,m,m
+27,27.0,,3EW0kQ1skZiK1NHg3Spt9J,Takeoff,m,n,m
+28,28.0,,7wlFDEWiM5OoIAt8RSli8b,YoungBoy Never Broke Again,m,m,m
+29,29.0,,2SJhf6rTOU53g8yBdAjPby,SoFaygo,m,m,m
+30,30.0,,3gBZUcNeVumkeeJ19CY2sX,Ken Carson,m,m,m
+31,31.0,,5H4yInM5zmHqpKIoMNAx4r,Central Cee,m,m,m
+32,32.0,,13y7CgLHjMVRMDqxdx0Xdo,Gucci Mane,m,m,m
+33,33.0,,5f7VJjfbwm532GiveGC0ZK,Lil Baby,m,m,m
+34,34.0,,20qISvAhX20dpIbOOzGK3q,Nas,m,m,m
+35,35.0,,4O15NlyKLIASxsJ0PrXPfz,Lil Uzi Vert,n,n,n
+36,36.0,,0ErzCpIMyLcjPiwT4elrtZ,NLE Choppa,m,m,m
+37,37.0,,2GRDbUJRZwKzeiwxrjJdmQ,2Rare,x,m,m
+38,38.0,,6Xgp2XMz1fhVYe7i6yNAax,Trippie Redd,m,m,m
+39,39.0,,4Gso3d4CscCijv0lmajZWs,Don Toliver,m,m,m
+40,40.0,,757aE44tKEUQEqRuT6GnEB,Roddy Ricch,m,m,m
+41,41.0,,3HiuzBlSW7pGDXlSFMhO2g,Young Dolph,m,m,m
+42,42.0,,3OoC54nEM3Xl7Kn5hsDdpg,Finesse2tymes,x,p,m
+43,43.0,,3MdXrJWsbVzdn6fe5JYkSQ,Latto,f,f,f
+44,44.0,,3ppZNqihWOzuH4A0f4KmeP,Gangsta Boo,f,f,f
+45,45.0,,6AgTAQt8XS6jRWi4sX7w49,Polo G,m,m,m
+46,46.0,,45TgXXqMDdF8BkjA83OM7z,Rod Wave,m,m,m
+47,47.0,,3Rx4PJ7SP6unkOk5elPUK7,Money Man,m,m,m
+48,48.0,,50co4Is1HCEo8bhOyUWKpn,Young Thug,m,m,m
+49,49.0,,2hlmm7s2ICUX0LVIhVFlZQ,Gunna,m,m,m
+50,50.0,,31W5EY0aAly4Qieq6OFu6I,A Boogie Wit da Hoodie,m,m,m
+51,51.0,,2jku7tDXc6XoB6MO2hFuqg,Tory Lanez,m,m,m
+52,52.0,,6lOaHNmL3l3hKDGNf0egfs,Peezy,m,p,m
+53,53.0,,5QdEbQJ3ylBnc3gsIASAT5,G Herbo,m,m,m
+54,54.0,,0WK3H9OErSn5zKOkOV5egm,DDG,m,m,m
+55,55.0,,4DdkRBBYG6Yk9Ka8tdJ9BW,Offset,m,m,m
+56,56.0,,1z7b1Pr1rSlvWRzsW3HOrS,Russ,m,m,m
+57,57.0,,0YinUQ50QDB7ZxSCLyQ40k,Mustard,n,d,m
+58,58.0,,4MCBfE4596Uoi2O4DtmEMz,Juice WRLD,m,m,m
+59,59.0,,46SHBwWsqBkxI7EeeBEQG7,Kodak Black,m,m,m
+60,60.0,,4FlG0V0jhLO4qGpayFOphj,EST Gee,m,m,m
+61,61.0,,64KEffDW9EtZ1y2vBYgq8T,Marshmello,m,m,m
+62,62.0,,5SXuuuRpukkTvsLuUknva1,Baby Keem,m,m,m
+63,63.0,,3tJoFztHeIJkJWMrx0td2f,Moneybagg Yo,m,m,m
+64,64.0,,6icQOAFXDZKsumw3YXyusw,Lil Yachty,m,m,m
+65,65.0,,2RdwBSPQiwcmiDo9kixcl8,Pharrell Williams,m,m,m
+66,66.0,,2rhFzFmezpnW82MNqEKVry,Ski Mask The Slump God,m,p,m
+67,67.0,,3ipn9JLAPI5GUEo4y4jcoi,Ludacris,m,m,m
+68,68.0,,5tth2a3v0sWwV1C7bApBdX,Lil' Kim,f,f,f
+69,69.0,,4qXC0i02bSFstECuXP2ZpL,Blxst,m,m,m
+70,70.0,,1grN0519h2zYqpRtYbDZAl,Larry June,m,m,m
+71,71.0,,55Aa2cqylxrFIXC767Z865,Lil Wayne,m,m,m
+72,72.0,,3DELNHPLdJgXkDHOTt3ok8,MOUNT WESTMORE,m,p,g
+73,73.0,,7hJcb9fa4alzcOq3EaNPoG,Snoop Dogg,m,m,m
+74,74.0,,3Mcii5XWf6E0lrY3Uky4cA,Ice Cube,m,m,m
+75,75.0,,3crnzLy8R4lVwaigKEOz7V,E-40,m,m,m
+76,76.0,,4sb7rZNN93BSS6Gqgepo4v,Too $hort,m,m,m
+77,77.0,,15iVAtD3s3FsQR4w1v6M0P,Chief Keef,m,m,m
+78,78.0,,21WS9wngs9AqFckK7yYJPM,PnB Rock,m,m,m
+79,79.0,,0g9vAlRPK9Gt3FKCekk4TW,Ab-Soul,m,m,m
+80,80.0,,1G9G7WwrXka3Z1r7aIDjI7,Outkast,m,m,g
+81,81.0,,01QTIT5P1pFP3QnnFSdsJf,Lupe Fiasco,m,m,m
+82,82.0,,7iZtZyCzp3LItcw1wtPI3D,Rae Sremmurd,n,n,g
+83,83.0,,6AMd49uBDJfhf30Ak2QR5s,Coi Leray,f,f,f
+84,84.0,,2qAwMsiIjTzlmfAkXKvhVA,Armani White,x,m,m
+85,85.0,,7FOQfJbC3e4GNoheojERnF,SleazyWorld Go,x,m,m
+86,86.0,,181bsRPaVXVlUKXrxwZfHK,Megan Thee Stallion,f,f,f
+87,87.0,,4r63FhuTkUYltbVAg5TQnk,DaBaby,m,m,m
+88,88.0,,4IprNlQiJZUUJhDl0fL2SL,Quando Rondo,m,m,m
+89,89.0,,4Xar68aJpS6MogtDg8gNiA,Lul Timm,x,p,m
+90,90.0,,45gHcnDnMC15sgx3VL7ROG,42 Dugg,m,m,m
+91,91.0,,3qiHUAX7zY4Qnjx8TNUzVx,Yeat,m,m,m
+92,92.0,,3nFkdlSjzX9mRTtwJOzDYB,JAY-Z,m,m,m
+93,93.0,,77gMBvQ2frbQAPyCeoYGm7,Lakeyah,f,f,f
+94,94.0,,2wIVse2owClT7go1WT98tk,Missy Elliott,f,f,f
+95,95.0,,20sxb77xiYeusSH8cVdatc,Meek Mill,m,m,m
+96,96.0,,3LZZPxNDGDFVSIPqf4JuEf,Ice Spice,f,f,f
+97,97.0,,59wfkuBoNyhDMQGCljbUbA,Diddy,m,d,m
+98,98.0,,5me0Irg2ANcsgc93uaYrpb,The Notorious B.I.G.,m,m,m
+99,99.0,,0A7g2YbCA9FlyZvAG6VmKP,The LOX,n,n,g
+100,100.0,,09A1kpyGbzYAPb8cEvee64,Stevie J,m,m,m
+101,101.0,,5pR1zWq3UPsOpW1pTWayLf,Hitkidd,m,f,m
+102,102.0,,6MPCFvOQv5cIGfw3jODMF0,Internet Money,n,n,m
+103,103.0,,137W8MRPWKqSmrBGDBFSop,Wiz Khalifa,m,m,m
+104,104.0,,2YZyLoL8N0Wb9xBt1NhZWg,Kendrick Lamar,m,m,m
+105,105.0,,28ExwzUQsvgJooOI0X1mr3,Jay Rock,m,m,m
+106,106.0,,768KV6PLzzcqy1CRCMFUNW,Baby Racks,x,p,m
+107,107.0,,7dGJo4pcD2V6oG8kP0tJRR,Eminem,m,m,m
+108,108.0,,0fA0VVWsXO9YnASrzqfmYu,Kid Cudi,m,m,m
+109,109.0,,17lzZA2AlOHwCwFALHttmp,2 Chainz,m,m,m
+110,110.0,,1ybINI1qPiFbwDXamRtwxD,Smino,m,m,m
+111,111.0,,6l3HvQ5sa6mXTsMTB19rO5,J. Cole,m,m,m
+112,112.0,,55zZKMiLQNwu6unkKc8J4y,BiC Fizzle,x,p,m
+113,113.0,,5RivQkx7CAT7TSVFJKvbDz,BigWalkDog,x,m,m
+114,114.0,,1anyVhU62p31KFi8MEzkbf,Chance the Rapper,m,m,m
+115,115.0,,4tIKaxUmpXzshok2yCnwdf,King Promise,x,p,m
+116,116.0,,4yBK75WVCQXej1p04GWqxH,Jeezy,m,m,m
+117,117.0,,5oNgAs7j5XcBMzWv3HAnHG,DJ Drama,m,m,m
+118,118.0,,2ledyuziz6YjLK5Dw483Oc,DJ Paul,m,m,m
+119,119.0,,5gCRApTajqwbnHHPbr2Fpi,Juicy J,m,m,m
+120,120.0,,1zNqQNIdeOUZHb8zbZRFMX,Swae Lee,m,m,m
+121,121.0,,7EEiVZvj6RCEtVX2F2pyxu,Slim Jxmmi,x,n,m
+122,122.0,,14ejEUaU0wE2iAenbbv9b8,Sheek Louch,m,m,m
+123,123.0,,2x8KDZdSONA3872CnhaAlX,Styles P,m,m,m
+124,124.0,,5pnbUBPifNnlusY8kTBivi,Jadakiss,m,m,m
+125,125.0,,2ht3wxeT69CzyKFChNnNAB,Big Boi,m,m,m
+126,126.0,,74V3dE1a51skRkdII8y2C6,André 3000,m,m,m
+127,127.0,,6vXTefBL93Dj5IqAWq6OTv,French Montana,m,m,m
+128,128.0,,2HO2kO7O5gEnM91dhobllP,Smooky MarGielaa,m,p,m
+129,129.0,,13ubrt8QOOCPljQ2FL1Kca,A$AP Rocky,m,m,m
+130,130.0,,1HwM5zlC5qNWhJtM00yXzG,DMX,m,m,m
+131,131.0,,2Ggj5XNlIb4Lnbqe307FyB,Lola Brooke,f,p,f
+132,132.0,,3P2dL1jA3FykjGry2EcZEf,Billy B,x,p,f
+133,133.0,,7eDFwYpqsAROCZibWYr5C1,Gloss Up,m,p,f
+134,134.0,,5LxoXQBUoD5oftz6xQLv9y,K Carbon,f,p,f
+135,135.0,,1aSHAWLQKX1Ln5yoHh8mTq,Slimeroni,x,p,f
+136,136.0,,0cTIgkgGfLEoAAKV7tJnRz,Aleza,x,p,f
+137,137.0,,5kxnZh8gXyXdIvCWbDMevT,Eem Triplin,m,p,m
+138,138.0,,1HPW4jeRjXBFRoUnSvBzoD,Destroy Lonely,m,m,m
+139,139.0,,1Z8ODXyhEBi3WynYw0Rya6,De La Soul,n,n,m
+140,140.0,,1sBkRIssrMs1AbVkOJbc7a,Rick Ross,m,m,m
+141,141.0,,0huGjMyP507tBCARyzSkrv,Cordae,m,m,m
+142,142.0,,3jK9MiCrA42lLAdMGUZpwa,Anderson .Paak,m,m,m
+143,143.0,,08PvCOlef4xdOr20jFSTPd,Flo Milli,f,f,f
+144,144.0,,6S6u5pS5ywg7rv50rhpobQ,Maiya The Don,f,p,f
+145,145.0,,39i5B6umzWzkfMe12JrMwW,TiaCorine,f,p,f
+146,,,0Y5Wgx4aNU8Jm4T9OxI22o,Money Musik,x,p,m
+147,,,3IJ21966TwNZI24MwZHMu4,Baby Tate,m,,f
+148,,,3q7HBObVc0L8jNeTe5Gofh,50 Cent,m,m,m
+149,,,6KtRA9pyDcbDyanI7bfU8W,Ghostluvme,x,p,m
+150,,,7sP4SQ0WY6jfps1I19Ot7i,Fridayy,x,m,m
+151,,,5spEJXLwD1sKUdC2bnOHPg,Bone Thugs-N-Harmony,n,n,g
+152,,,4UrIphY7uGLwD0rRd6NIi9,Lambo4oe,x,p,m
+153,,,3zZ88AwlTwfCJkowsFCvLA,Babyface Ray,m,m,m
+154,,,1ZwdS5xdxEREPySFridCfh,2Pac,m,m,m
+155,,,7jocoSCuCtpCxCI6IbP8ye,Digital Underground,m,m,g
+156,,,0GeeIVcvGA8GSlWsoY1dkG,Vory,m,m,m
+157,,,0M2CO5ijP35MDhNwvpgxTV,sped up nightcore,x,p,x
+158,,,2xzyIzdjfeXX6FIQtlAAyw,ARIZONATEARS,x,p,m
+159,,,3FBEsNyIwRnOHOf1Rv3SLa,Superstar Pride,x,p,m
+160,,,5Rzqmz1zAszembFHGZQuAt,Souls Of Mischief,m,m,g
+161,,,1uNFoZAHBGtllmzznpCI3s,Justin Bieber,m,m,m
+162,,,6lEhBhAv6HOopjXssi09cq,TisaKorean,m,m,m
+163,,,5Cw0Kn3UHy7esDxIu1xlpu,Murda Beatz,m,m,m
+164,,,3KNIG74xSTc3dj0TRy7pGX,Yung Bleu,m,m,m
+165,,,6BH1xcDkwbbyrLMUKECsW1,Toosii,m,m,m
+166,,,3CbYyyd8wH3RT6t0jwpdzC,Murda Beatz,m,m,m
+167,,,4xRYI6VqpkE3UwrDrAZL8L,Logic,m,n,m
+168,,,79D4dipwR6scV8AN3dm7gW,Seth MacFarlane,m,m,m
+169,,,7xTKLpo7UCzXSnlH7fOIoM,Redman,m,,m
+170,,,5v0XTlB9FqNvfBfnw8n5b0,Statik Selektah,m,m,m
+171,,,6veh5zbFpm31XsPdjBgPER,BIA,f,,f
+172,,,0eVyjRhzZKke2KFYTcDkeu,The Alchemist,m,d,m
+173,,,6C1ohJrd5VydigQtaGy5Wa,Joyner Lucas,m,m,m
+174,,,6fKiutMtRIcxi4zEau0BuI,Big Boss Vette,x,f,f
+175,,,3uJx5SnOM59Li7lCxA3b29,Lil Keed,m,m,m
+176,,,01XheDz1G3rSqTe6RkhRFG,"Young Stoner Life, Young Thug",x,p,x
+177,,,1xr2G8Hlx4QWmT9HaUbmoO,Young Stoner Life,m,m,g
+178,,,0P8YNJXX7QeQ8iZIUCXJgi,The Diplomats,n,m,g
+179,,,5Y5TRrQiqgUO4S36tzjIRZ,Timbaland,m,m,m
+180,,,6cK3NBO6uP7hh0oyuVELFl,Saweetie,f,f,f
+181,,,0c173mlxpT3dSFRgMO8XPh,Big Sean,m,m,m
+182,,,4V8LLVI7PbaPR0K2TGSxFF,"Tyler, The Creator",m,m,m
+183,,,23DYJsw4uSCguIqiTIDtcN,Southside,n,d,m
+184,,,1K15GRZZATsCJyGJ4bYiEz,Luh Tyler,x,p,m
+185,,,3ppQEG71r7jVpI8RudzycF,OHGEESY,x,p,m
+186,,,26qmuJTgE3g67pPClBQ3Iu,Cash Kidd,m,p,m
+187,,,1wiBLzTI7z9RUwEpNPdFT6,Mase,m,m,m
+188,,,14CHVeJGrR5xgUGQFV5BVM,Fivio Foreign,m,m,m
+189,,,5oifjQw72WO7Jut07fVWMy,KAYTRAMINÉ,m,p,g
+190,,,3Gm5F95VdRxW3mqCn8RPBJ,Aminé,m,m,m
+191,,,6qgnBH6iDM91ipVXv28OMu,KAYTRANADA,m,m,m
+192,,,3z3g65U7mmyyBmmDfsQK9x,Luniz,n,n,g
+193,,,2FT75iYuWmycqYrXbVD9cn,Michael Marshall,x,d,m
+194,,,2Xu7q46Hf02xOoEIm4E1Qs,Big Pun,m,m,m
+195,,,3zTOe1BtyTkwNvYZOxXktX,Joe,m,d,m
+196,,,4bAfAX9Zg9XdMKREfURqaw,Mello Buckzz,x,p,f
+197,,,5yPzzu25VzEk8qrGTLIrE1,Young Nudy,m,m,m
+198,,,1YRqgFNXqRyMDRr8ClS1NL,Kali,f,f,f
+199,,,2cMVIRpseAO7fJAxNfg6rD,CHASE B,m,p,m
+200,,,02kJSzxNuaWGqwubyUba0Z,G-Eazy,m,m,m
+201,,,1I0tv3cE1cDIJvQpHyuCYN,Icandy,x,p,f
+202,,,1gPhS1zisyXr5dHTYZyiMe,Kevin Gates,m,m,m
+203,,,4GMgdB3vwbBOc42hbXEi9p,N.O.R.E.,m,m,m
+204,,,3DbwFQlvLxRSi2uX8mf81A,Sexyy Red,x,p,f
+205,,,5xkFVS6IwwgHEAaRzXc9U3,Tay Keith,x,m,m
+206,,,57LYzLEk2LcFghVwuWbcuS,Summer Walker,f,f,f
+207,,,37hAfseJWi0G3Scife12Il,City Girls,n,f,g
+208,,,0YWxKQj2Go9CGHCp77UOyy,Fabolous,m,m,m
+209,,,2a0uxJgbvvIRI4GX8pYfcr,J Hus,m,m,m
+210,,,6Ip8FS7vWT1uKkJSweANQK,Dave,m,,m
+211,,,5Nf5yishRW9Ye174sJISkg,London On Da Track,x,m,m
+212,,,5LHRHt1k9lMyONurDHEdrp,Tyga,m,m,m
+213,,,360IAlyVv4PCEVjgyMZrxK,Miguel,m,d,m
+214,,,3BAgmPNIK5IJl7zMK1wvMA,That Mexican OT,m,p,m
+215,,,0k7Xl1pqI3tu8sSEjo5oEg,Paul Wall,m,m,m
+216,,,7xsuKSqVVN2JzUIpZV0GeW,DRODi,x,p,m
+218,,,2N4EYkIlG1kv25g6Wv8LGI,Killer Mike,m,m,m
+219,,,5xI4mPixKfrCCspATqbpy3,Eryn Allen Kane,x,f,f
+220,,,4JpFNbLvh0BGXAubKIthEM,DD Osama,m,m,m
+221,,,6q3p11nP1p80Ey6LrOOSed,Hit-Boy,m,m,m
+222,,,1zQJBLCGM0tdPW9XwgdEll,Big Hit,x,d,x
+223,,,4jWzNq3sdzSpqn7BnzvIKn,Memphis Bleek,m,m,m
+224,,,6kBjAFKyd0he7LiA5GQ3Gz,Aqua,n,d,g
+225,,,0dvFTsuG02c4cRbcSQ8zE6,Yak Gotti,x,p,m
+226,,,6QtgPSJPSzcnn7dPZ4VINp,King Von,m,m,m
+227,,,3VrGfWE8YdYMK4ySpnE0ly,Lyrical Lemonade,x,m,m
+228,,,2ZbWlThDW0qSbI3hinpl0w,MC Lyte,f,f,f
+229,,,6BgdroP3f57LfPZvWcNWdq,Kaliii,x,p,f
+230,,,2TYRz7cFNZNPLUWRijsJNL,Kal Banx,x,p,m
+231,,,4c2ighP1wj8E5dVGJDCOiB,Kari Faux,f,f,f
+232,,,7oXyXDUyxRjYXWC5L5EuGy,FendiDa Rappa,x,f,f
+233,,,3s2wTjWxK8NOX09dmsvVOh,Chingy,m,m,m
+234,,,39af15p0feaAOdL9DTRj3m,JT,m,d,m
+235,,,5tQMB0cuNXdCtzovGt55uD,LUCKI,m,m,m
+236,,,0CLW5934vy2XusynS1px1S,Flyana Boss,m,n,f
+237,,,5dHt1vcEm9qb8fCyLcB3HL,A$AP Ferg,m,m,m
+238,,,0I5HubncQ8E1MFZOlPDY4J,Trinidad James,m,m,m
+239,,,5IcR3N7QB1j6KBL8eImZ8m,ScHoolboy Q,m,m,m
+240,,,4q3ewBCX7sLwd24euuV69X,Bad Bunny,m,m,m
+241,,,1Xyo4u8uXC1ZmMpatF05PJ,The Weeknd,m,m,m
+242,,,70gP6Ry4Uo0Yx6uzPIdaiJ,Bas,m,,m
+243,,,4P0dddbxPil35MNN9G2MEX,Cypress Hill,n,m,m
+244,,,6Ha4aES39QiVjR0L2lwuwq,Yo Gotti,m,m,m
+245,,,0M2CO5ijP35MDhNwvpgxTV,sped up nightcore,x,p,x
+246,,,6Uh8uJyN9g7oFjDK16nJgb,Juelz Santana,m,m,m
+247,,,6AMa1VFQ7qCi61tCRtVWXe,Jim Jones,m,m,m
+248,,,7iMvwE8qANp3aIfAGKEAwS,Cam'ron,m,m,m
+249,,,4CHcMmk5LFwo4Jn3q5xxfD,Freekey Zekey,m,m,m
+250,,,5lbW0rNhFyCiSlClBMYbki,Yung Miami,x,f,f
+251,,,0ndMofuAPmTktjONZv20JL,Yukmouth,m,m,m
+252,,,0A8IvMuH8NLgUGd9eKqGxA,Numskull,m,n,m
+253,,,3C3HtG0MPpmkY87mctxgSk,Tajai,m,m,m
+254,,,5WwguN1D1fTYBZL1rEBkM7,A-Plus,m,,m
+255,,,2tgyOPAmFNLotTv5yiQ9Ip,Phesto,x,m,m
+256,,,1dpAIrpTGOrblTYJHpE8ao,Opio,m,m,m
+257,,,53B8dEQzmtefvkdCAkO0YR,Krayzie Bone,m,m,m
+258,,,23xTTTcfVHvWRIPiDAOAE4,Bizzy Bone,m,m,m
+259,,,6wAO5FJZZ5PJoRBSpBic7M,Layzie Bone,m,m,m
+260,,,,,,,
+261,,,699OTQXzgjhIYAHMy9RyPD,Playboi Carti,m,m,m
+262,,,3S0tlB4fE7ChxI2pWz8Xip,Giggs,m,,m
+263,,,6Uh8uJyN9g7oFjDK16nJgb,Juelz Santana,m,m,m
+264,,,6AMa1VFQ7qCi61tCRtVWXe,Jim Jones,m,m,m
+265,,,7iMvwE8qANp3aIfAGKEAwS,Cam'ron,m,m,m
+266,,,4CHcMmk5LFwo4Jn3q5xxfD,Freekey Zekey,m,m,m
+267,,,4EnEZVjo3w1cwcQYePccay,N.W.A.,x,m,m
+268,,,4OBJLual30L7gRl5UkeRcT,T.I.,m,m,m
+269,,,0NWbwDZY1VkRqFafuQm6wk,Mike WiLL Made-It,m,m,m
+270,,,4E2rKHVDssGJm2SCDOMMJB,Doechii,f,f,f
+271,,,4W7fxKwDR9luCrOryB3GVK,Rundown Spaz,x,p,x
+272,,,2Mu5NfyYm8n5iTomuKAEHl,Ms. Lauryn Hill,f,f,f
+273,,,0gg11prPP6OqtUvBcKnPpq,Rylo Rodriguez,x,m,m
+274,,,4PNHuWkk4ee6R8WEhFVPf5,NoCap,m,m,m
+275,,,5K4W6rqBFWDnAN6FQUkS6x,Kanye West,m,m,m
+276,,,6U3ybJ9UHNKEdsH7ktGBZ7,JID,m,m,m
+277,,,0sKsReKseslDlhxmbN6wLk,BabyTron,m,m,m
+278,,,43s6uFZrdusv7ggmDSpO41,TaTa,m,p,m
+279,,,1YfEcTuGvBQ8xSD1f53UnK,Busta Rhymes,m,m,m
+280,,,7tYKF4w9nC0nq9CsPZTHyP,SZA,f,f,f
+281,,,3rO1KMi81CCLjSjkImNtrA,CMG The Label,x,p,x
+282,,,2PsjBHyb950JI7BHXY10TD,Cool & Dre,n,n,n
+283,,,4Q7FV4mw6Q3va79JwftGRv,BabyDrill,x,p,x
+284,,,6NzM38IkXdbQsQ4qW9CG7z,Amil,f,f,f
+285,,,1J2VVASYAamtQ3Bt8wGgA6,Ja Rule,m,m,m
+286,,,0ONHkAv9pCAFxb0zJwDNTy,Pusha T,m,m,m
+287,,,0ABk515kENDyATUdpCKVfW,Westside Gunn,m,m,m
+288,,,7wqtxqI3eo7Gn1P7SpP6cQ,Salt-N-Pepa,n,n,n
+291,,,0hF6lbAjRsq4svrQUr5sgU,Kyle Richh,m,p,m
+292,,,3BcgTyEdL81zMljmXcilZM,Jenn Carter,f,p,f
+293,,,0rG0AZBscc8S8q1ahIsasI,JUVENILE,m,p,m
+294,,,0fbFfVckGKsDbAfYnB5mD1,Mannie Fresh,m,m,m
+295,,,002HSjuWsGMinkXTa7JcRp,Turbo,m,n,m
+296,,,5Matrg5du62bXwer29cU5T,Benny The Butcher,m,m,m
+297,,,34EP7KEpOjXcM2TCat1ISk,Wu-Tang Clan,n,m,m
+298,,,4VmEWwd8y9MCLwexFMdpwt,Method Man,m,m,m
+299,,,2yQf6b8hxahZaT5dHlWaB1,Raekwon,m,m,m
+300,,,4OBbOrkD4geIjOLrICN3wO,Inspectah Deck,m,m,m
+301,,,4QTIR7KM0trauXspUNduhh,Buddha Monk,m,m,m
+302,,,2tIP7SsRs7vjIcLrU85W8J,The Kid LAROI,m,m,m
+303,,,3IaKn0ExWTMPqa0mscUYw3,Only The Family,m,m,m
+304,,,4p8ivLWn8hpHM5uLhYiMix,WizDaWizard,x,p,x
+305,,,4VCriUU9CsPnUvoAsxVk1p,310babii,x,p,x
+306,,,592XleMjor8huE5Jfgks7p,Cardo,m,m,m
+307,,,46MWeeHNVMYRIIofQBEX98,BEAM,f,,f
+308,,,331Xmbd0r2nu2TxnA4aQQR,BG,m,,m
+309,,,36HvjE9pV91jEjO1qBRidS,B.G.,m,,m
+310,,,6evKD5JWJON3qPBJtUEmtY,G-Unit,m,m,m
+311,,,2Hm8pRagdhRNFBbCiGaJEI,chief wuk,x,p,x
+312,,,52XVQUBiGoiv1E3bQZ3KHd,Bongo ByTheWay,l,m,m
+313,,,1t22AdiJ8P9eXOnoJ8xPJT,YTB Fatt,x,p,x
+314,,,5xUMw9vaS567MBBjsoLslo,Yung L.A.,m,m,m
+315,,,3ZooCJzNMTLpmJaIRUEorI,Young Dro,m,m,m
+316,,,0du5cEVh5yTK9QJze8zA0C,Bruno Mars,m,m,m
+317,,,7jAs1uPnpfNmT6e5qtEPxq,ATL Jacob,x,m,m
+318,,,6GMYJwaziB4ekv1Y6wCDWS,Soulja Boy,m,m,m
+319,,,5CiGnKThu5ctn9pBxv7DGa,benny blanco,m,m,m
+320,,,7v9bFXCdSMA2o3gS4nvp0F,Pimp C,m,m,m
+321,,,4Otx4bRLSfpah5kX8hdgDC,Naughty By Nature,m,m,m
