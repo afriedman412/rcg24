@@ -18,7 +18,7 @@ def get_most_recent_chart_date() -> str:
     return most_recent_chart_date
 
 
-def get_date(delta=0) -> str:
+def get_date(delta: int = 0) -> str:
     """
     Gets today for the Eastern time zone and turns it into a string.
 

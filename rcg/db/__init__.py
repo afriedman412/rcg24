@@ -1,9 +1,11 @@
 # db init
 import os
+
 from pymysql import connect
 from pymysql.connections import Connection
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
+from typing import Tuple, Union
 
 
 def make_sql_connection() -> Connection:
@@ -41,10 +43,10 @@ def make_sql_engine() -> Engine:
 
 def db_query(
     q: str,
-    conn: bool = None,
+    conn: Union[Connection, None] = None,
     commit: bool = False,
     close: bool = True
-):
+) -> Tuple[Tuple]:
     if not conn:
         conn = make_sql_connection()
     with conn.cursor() as cur:

@@ -1,11 +1,13 @@
-import os
-import pytest
-from rcg.src.gender import lookup_gender
-from rcg.src import load_spotipy, update_chart
-from rcg.src.track import parse_track
-from rcg.db import db_query
-from tests.pretest_setup import pretest_setup
 import json
+import os
+
+import pytest
+
+from rcg.db import db_query
+from rcg.src import load_spotipy, update_chart
+from rcg.src.gender import lookup_gender
+from rcg.src.track import parse_track
+from tests.pretest_setup import pretest_setup
 
 
 @pytest.fixture(scope='session')
@@ -35,20 +37,20 @@ def test_chart(pretest):
 
     assert db_query(
         "select distinct(song_name) from chart where primary_artist_name='Drake'"
-        ) == (
-            ('Jimmy Cooks (feat. 21 Savage)',),
-            ('Pussy & Millions (feat. Travis Scott)',),
-            ('Rich Flex',),
-            ('Major Distribution',),
-            ('Privileged Rappers',),
-            ('First Person Shooter (feat. J. Cole)',),
-            ('You Broke My Heart',),
-            ('IDGAF (feat. Yeat)',)
-        )
+    ) == (
+        ('Jimmy Cooks (feat. 21 Savage)',),
+        ('Pussy & Millions (feat. Travis Scott)',),
+        ('Rich Flex',),
+        ('Major Distribution',),
+        ('Privileged Rappers',),
+        ('First Person Shooter (feat. J. Cole)',),
+        ('You Broke My Heart',),
+        ('IDGAF (feat. Yeat)',)
+    )
 
 
 def test_artist_added():
     spotify_id = db_query(
         "SELECT spotify_id from artist where artist_name='Doja Cat'"
-        )
+    )
     assert spotify_id[0][0] == '5cj0lLjcoR7YOSnhnX0Po5'

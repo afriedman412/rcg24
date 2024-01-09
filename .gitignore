@@ -9,7 +9,10 @@ notes.md
 .DS_Store
 .env*
 req.sh
-rcg/rcg_old/*
+*/rcg_old/*
+rcg_old
+
+lint.txt
 
 *-key.json
 *.log

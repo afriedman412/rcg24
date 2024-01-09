@@ -1,12 +1,12 @@
 import os
 from collections import Counter
-from typing import Tuple
+from typing import Tuple, Union
 
 import pylast
 import wikipedia
 
 
-def lookup_gender(artist_name: str) -> Tuple[str]:
+def lookup_gender(artist_name: str) -> Tuple[str, str, str]:
     """
     Gets the gender from last.fm and wikipedia, then determines the "official" gender.
 
@@ -18,7 +18,7 @@ def lookup_gender(artist_name: str) -> Tuple[str]:
     return lfm_gender, wikipedia_gender, gender
 
 
-def access_lfm():
+def access_lfm() -> None:
     """
     Instantiates a lastfm network object w credentials.
     """
@@ -62,17 +62,21 @@ def get_wikipedia_gender(artist: str) -> str:
         return "p"  # page error
 
 
-def gender_count(bio: str, return_counts: bool = False):
+def gender_count(bio: str, return_counts: bool = False) -> Union[dict[str], str]:
     """
     Guesses gender based on pronouns in bio.
     """
-    bio = Counter(bio.lower().split())
+    pronoun_count = Counter(bio.lower().split())
     data = [
         ('m', ['he', 'him', 'his']),
         ('f', ['she', 'her', 'hers']),
         ('n', ['they', 'them', 'theirs'])
     ]
-    counts = {d[0]: sum([bio[p] for p in d[1]]) for d in data}
+    counts = {
+        d[0]: sum(
+            [pronoun_count[p] for p in d[1]]
+            ) for d in data
+        }
     if return_counts:
         return counts
     else:

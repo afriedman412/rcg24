@@ -1,8 +1,10 @@
+from collections import namedtuple
+from typing import List, Tuple, Union, Iterable, Any
+
+from sqlalchemy.engine.cursor import CursorResult
+
 from ..db import db_query
 from .gender import lookup_gender
-from sqlalchemy.engine.cursor import CursorResult
-from collections import namedtuple
-from typing import Union, List, Tuple
 
 Artist: tuple[str] = namedtuple(
     "Artist", [
@@ -18,11 +20,11 @@ Track: tuple[str, str, Tuple[Artist], str, str] = namedtuple(
         "artists",
         "primary_artist_name",
         "primary_artist_spotify_id"
-        ]
+    ]
 )
 
 
-def parse_chart(chart: CursorResult) -> List[Track]:
+def parse_chart(chart: Union[Tuple[Any], CursorResult]) -> List[Track]:
     """
     Turns a chart queried from the db into a list of Tracks.
     """
@@ -51,7 +53,7 @@ def parse_track(track: dict) -> Track:
     return track_output
 
 
-def get_group_artists(artists: list[Artist]) -> list[Artist]:
+def get_group_artists(artists: Iterable[Artist]) -> Iterable[Artist]:
     """
     If artists is a group, get group artists.
 
@@ -73,7 +75,7 @@ def chart_song_check(
         song_spotify_id: str,
         primary_artist_spotify_id: str,
         chart_date: str
-) -> Union[tuple, None]:
+) -> Union[Tuple, None]:
     """
     Is the song song_spotify_id by artist_spotify_id already in the current chart?
 
@@ -87,21 +89,21 @@ def chart_song_check(
     """
     return db_query(
         f"""
-            SELECT * FROM chart
-            WHERE song_spotify_id="{song_spotify_id}"
-            AND primary_artist_spotify_id="{primary_artist_spotify_id}"
-            AND chart_date="{chart_date}";
-            """
+        SELECT * FROM chart
+        WHERE song_spotify_id="{song_spotify_id}"
+        AND primary_artist_spotify_id="{primary_artist_spotify_id}"
+        AND chart_date="{chart_date}";
+        """
     )
 
 
-def artist_check(artist_spotify_id: str) -> Union[tuple, None]:
+def artist_check(artist_spotify_id: str) -> Union[Tuple, None]:
     """
     Is artist_spotify_id in the db?
     """
     return db_query(
         f'SELECT * from artist where spotify_id="{artist_spotify_id}"'
-        )
+    )
 
 
 def add_artist(artist_name: str, artist_spotify_id: str) -> None:
@@ -123,7 +125,7 @@ def add_artist(artist_name: str, artist_spotify_id: str) -> None:
     return
 
 
-def feature_check(song_spotify_id, artist_spotify_id):
+def feature_check(song_spotify_id: str, artist_spotify_id: str) -> Union[Tuple, None]:
     """
     Is artist_spotify_id's contribution to song_spotify_id in the db?
     """
@@ -156,7 +158,7 @@ def add_song_feature(
         VALUES (""" + ", ".join(
         f'"{p}"' for p in
         [
-            track.name,
+            track.song_name,
             track.song_spotify_id,
             artist_name,
             artist_spotify_id,

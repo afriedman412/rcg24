@@ -1,22 +1,61 @@
 import os
+import re
 from datetime import datetime as dt
-from typing import List, Literal, Tuple, Union
+from typing import List, Literal, Tuple, Union, Dict
 
 import pandas as pd
-import re
 import spotipy
 from pandas import DataFrame
+from itertools import zip_longest
 
 from ..config.config import GENDERS  # TODO: move colors to CSS
 from ..db import db_query
+from ..db.queries import chart_q, gender_count_q, tally_q
 from .dates import get_date, get_most_recent_chart_date, query_w_date
-from .track import Track, parse_track, parse_chart, add_artist
+from .track import Track, add_artist, parse_chart, parse_track
 
 
-def count_data(full_chart: DataFrame) -> DataFrame:
+def make_tally(chart_date: Union[str, None] = None):
+    if not chart_date:
+        chart_date = get_date()
+    tally = db_query(tally_q.format(chart_date))
+    tally_formatted = [_ for _ in zip_longest(
+        [t for t in tally if t[1] =='m'],
+        [t for t in tally if t[1] =='f'],
+        [t for t in tally if t[1] =='n']
+    )]
+    return tally_formatted
+    
+
+def make_chart(chart_date: Union[str, None] = None):
+    if not chart_date:
+        chart_date = get_date()
+    chart = db_query(chart_q.format(chart_date))
+    return chart
+
+
+def format_count_data(chart_date: Union[str, None] = None) -> Dict[str, Dict[str, float]]:
+    if not chart_date:
+        chart_date = get_date()
+    count_data = db_query(gender_count_q.format(chart_date))
+
+    count_dict = {
+        g.lower()[0]: {
+            'Total': next(d for d in count_data if d[0] == g.lower()[0])[1],
+            'Percentage': round(
+                float(
+                    next(d for d in count_data if d[0] == g.lower()[0])[2]
+                ), 3)
+        } for g in ['Male', 'Female', 'Non-Binary']
+    }
+    return count_dict
+
+
+def get_count_data(full_chart: List[Track]) -> DataFrame:
     """
     Gets count and normalized count from full chart.
     """
+    full_chart = pd.DataFrame(full_chart)
     count_data = pd.DataFrame(
         [
             full_chart['gender'].value_counts().astype(int),
@@ -27,12 +66,15 @@ def count_data(full_chart: DataFrame) -> DataFrame:
     return count_data
 
 
-def gender_count_data(count_data, g: Literal["m", "f", "n", "x"]):
+def get_gender_count_data(
+        count_data: DataFrame,
+        g: Literal["m", "f", "n", "x"]
+        ) -> Union[str, None]:
     """Used in Jinja"""
     return count_data.to_dict().get(g, None)
 
 
-def chart_w_features(full_chart: DataFrame) -> dict:
+def make_chart_w_features(full_chart: DataFrame) -> DataFrame:
     """
     Adds "Features" column to the full chart.
     """
@@ -55,25 +97,25 @@ def chart_w_features(full_chart: DataFrame) -> dict:
     chart_w_features['Song'] = chart_w_features['Song'].map(
         lambda t: re.sub(r"\s[\(\[](feat\.|with).+[\)\]]", "", t)
     )
-    return chart_w_features.to_dict('records')
+    return chart_w_features.drop_duplicates()
 
 
-def total_chart_dict(full_chart) -> dict:
+def make_total_chart_dict(full_chart: DataFrame) -> Dict[str, Dict[str, Union[str, int]]]:
     """
     Extracts gender data and converts to one dict.
     """
     total_df = full_chart['gender'].value_counts().rename_axis(
         'gender'
-        ).reset_index(name='count')  # gender count
+    ).reset_index(name='count')  # gender count
     pct_df = full_chart['gender'].value_counts(
         normalize=True
-        ).rename_axis('gender').reset_index(name='pct')  # gender pct
+    ).rename_axis('gender').reset_index(name='pct')  # gender pct
     pct_df['pct'] = pct_df['pct'].map(
         lambda c: c*100
-        ).round(2)  # formatted gender pct
+    ).round(2)  # formatted gender pct
     total_df = total_df.set_index('gender').join(
         pct_df.set_index("gender")
-        ).reset_index()  # join counts and pct
+    ).reset_index()  # join counts and pct
     total_chart_dict = total_df.to_dict("records")  # convert to dict
     for k in set(GENDERS).difference(
         set([d['gender'] for d in total_chart_dict])
@@ -84,7 +126,7 @@ def total_chart_dict(full_chart) -> dict:
     return total_chart_dict
 
 
-def gender_counts_prep(
+def get_gender_counts_prep(
         full_chart: DataFrame,
         return_dict: bool = False,
         return_indexes: bool = False,
@@ -97,8 +139,8 @@ def gender_counts_prep(
         c: full_chart.query(
             f"gender=='{c}'")['artist_name'].value_counts().reset_index().rename(
                 columns={
-                    "index": f"artist_name_{c[0].lower()}",
-                    "artist_name": f"count_{c[0].lower()}"
+                    "artist_name": f"artist_name_{c[0].lower()}",
+                    "count": f"count_{c[0].lower()}"
                 }
         ) for c in GENDERS
     }
@@ -118,21 +160,24 @@ def gender_counts_prep(
     if return_indexes:
         return list(
             zip(
-                gender_counts_prep.columns[::2],
-                gender_counts_prep.columns[1::2]
+                gender_counts_full.columns[::2],
+                gender_counts_full.columns[1::2]
             )
         )
     return gender_counts_full
 
 
-def gender_counts_keys() -> Tuple:
+def get_gender_counts_keys() -> List[Tuple[str]]:
     """
     Formatting things here I can't figure out how to format in Jinja!
     """
     return [(f"artist_name_{g}", f"count_{g}") for g in "mfn"]
 
 
-def chart_delta(new_chart: dict, old_chart: dict) -> Tuple[List]:
+def get_chart_delta(
+        new_chart: List[Track],
+        old_chart: List[Track]
+) -> Tuple[List[Track], List[Track]]:
     """
     Returns a list of tracks in the new chart and not in the old chart...
     and a list of tracks in the old chart but not in the new chart.
@@ -147,7 +192,7 @@ def chart_delta(new_chart: dict, old_chart: dict) -> Tuple[List]:
 def update_chart(
         chart: Union[list[Track], None] = None,
         chart_date: Union[str, None] = None
-        ) -> List[Track]:
+) -> List[Track]:
     """
     Updates chart for current date.
 
@@ -174,16 +219,16 @@ def update_chart(
         q = make_charting_query(live_chart, chart_date)
         db_query(q, commit=True)
         print(f"chart date updated for {chart_date}")
-        
+
         all_ids = [a[0] for a in db_query("select spotify_id from artist")]
 
         new_artists = {
-                a
-                for t in live_chart
-                for a in t.artists
-                if a.spotify_id not in all_ids
-            }
-        
+            a
+            for t in live_chart
+            for a in t.artists
+            if a.spotify_id not in all_ids
+        }
+
         for a in new_artists:
             add_artist(a.name, a.spotify_id)
 
@@ -195,7 +240,7 @@ def update_chart(
         return new_chart
 
 
-def make_charting_query(chart: list[Track], chart_date: str):
+def make_charting_query(chart: list[Track], chart_date: str) -> str:
     q = """
             INSERT INTO
             chart (song_name, song_spotify_id, primary_artist_name,
@@ -219,12 +264,12 @@ def make_charting_query(chart: list[Track], chart_date: str):
     return q
 
 
-def new_chart_check(latest_chart, current_chart):
+def new_chart_check(latest_chart, current_chart) -> bool:
     return {t[2] for t in latest_chart} == {t[1] for t in current_chart} \
         and get_date() == get_most_recent_chart_date()
 
 
-def load_spotipy():
+def load_spotipy() -> spotipy.Spotify:
     """
     Instantiates Spotipy object w credentials.
     """
@@ -253,11 +298,11 @@ def load_one_song(song_spotify_id: str) -> Track:
     return track
 
 
-def get_chart_from_db(chart_date: str = None):
+def get_chart_from_db(chart_date: str = None) -> Tuple[str, List[Track]]:
     if not chart_date:
         chart_date = db_query("select max(chart_date) from chart")[0][0]
     q = f"""
-        SELECT * FROM chart WHERE chart_date = '{chart_date}'
+        SELECT song_name, primary_artist_name FROM chart WHERE chart_date = '{chart_date}'
         """
     raw_chart = db_query(q)
     assert raw_chart, f"No chart found for {chart_date}"
@@ -265,7 +310,7 @@ def get_chart_from_db(chart_date: str = None):
     return chart_date, chart
 
 
-def get_counts(date_: str = None):
+def get_daily_gender_counts(date_: str = None):
     q = """
         SELECT gender, count(*)
         FROM chart
@@ -301,7 +346,5 @@ def load_chart(chart_date: str = None) -> Tuple[DataFrame, str]:
         db_query(q),
         columns=['song_name', 'primary_artist_name', 'chart_date', 'artist_name', 'gender'])
     full_chart['gender'] = full_chart['gender'].map({"m": "Male", "f": "Female", "n": "Non-Binary"})
-    if not chart_date:
-        chart_date = full_chart['chart_date'][0]
     formatted_chart_date = dt.strptime(chart_date, "%Y-%m-%d").strftime("%B %-d, %Y")
     return full_chart, formatted_chart_date
