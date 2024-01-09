@@ -10,15 +10,10 @@ from typing import Literal
 
 from flask import Blueprint, jsonify
 
-from ..src import get_daily_gender_counts, get_date, update_chart
+from ..src import get_date, update_chart
 from . import db_query
 
 db_routes = Blueprint("db_routes", __name__)
-
-
-@db_routes.route("/rcg/count/", methods=["GET"])
-def get_counts_web():
-    return jsonify(get_daily_gender_counts(), 200)
 
 
 @db_routes.route("/rcg/update/", methods=["GET"])

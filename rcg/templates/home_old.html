@@ -20,7 +20,7 @@
         {% for g in ['Male', 'Female', 'Non-Binary'] %}
         <h4 class="site-title">
             <span class="{{ g }}">
-                {{ g }}: </span>{{ count_data.get(g)['Total'] }} Credits ({{ count_data.get(g)['Percentage'] }}%)</h4>
+                {{ g }}: </span>{{ gender_count_data.get(g)['Total'] }} Credits ({{ gender_count_data.get(g)['Percentage'] }}%)</h4>
         {% endfor %}
     </div>
 
@@ -33,11 +33,11 @@
     <h4 class="col-head {{g}}">{{g.title()}}</h4>
     {% endfor %}
 
-    {% for row in tally %}
+    {% for row in gender_counts_full %}
         {% set class="even" if loop.index % 2 == 0 else "odd" %}
+        {% for a,c in gender_counts_keys() %}
         <div class="grid-item {{class}} g{{loop.index}}">
-        {% for artist in row %}
-            <span class="tally-artist">{{artist[0]}}</span><span class="tally-count">{{artist[-1]}}</span>
+            <span class="tally-artist">{{row.get(a, None)}}</span><span class="tally-count">{{row.get(c,None)}}</span>
         </div>
         {% endfor %}
     {% endfor %}
@@ -49,9 +49,9 @@
     
     {% for row in chart_w_features %}
         {% set class="even" if loop.index % 2 == 0 else "odd" %}
+        {% for c in ['Song', 'Primary Artist', 'Features'] %}
         <div class="grid-item {{class}} g{{loop.index}}">
-            {% for a in row %}
-            <span class="tally-artist">{{a}}</span>
+            <span class="tally-artist">{{row.get(c)}}</span>
         </div>
         {% endfor %}
     {% endfor %}

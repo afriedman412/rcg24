@@ -2,18 +2,21 @@ import os
 
 from flask import Blueprint, jsonify, render_template
 
-from ..src import (get_chart_delta, get_count_data, get_daily_gender_counts,
-                   get_gender_counts_keys, get_gender_counts_prep, load_chart,
-                   make_chart_w_features, make_tally, make_chart, format_count_data)
-from ..src.dates import get_date
+from ..src import (
+    get_parsed_chart,
+    make_chart_w_features,
+    make_tally,
+    format_count_data)
+from ..src.dates import get_date, verify_date
+from typing import Union
 
 web_routes = Blueprint("web_routes", __name__)
 
 
 @web_routes.route("/chart")
 def chart():
-    full_chart, date = load_chart()
-    return jsonify(make_chart_w_features(full_chart))
+    full_chart = make_chart_w_features("2022-12-31")
+    return jsonify(full_chart)
 
 
 @web_routes.route("/testo")
@@ -21,33 +24,50 @@ def testo():
     return " • ".join(["divorth???", os.getenv("LOCAL", "xxx")])
 
 
-@web_routes.route("/new-chart-test")
-def new_chart():
-    tally = make_tally()
-    chart = make_chart()
-    count_data = format_count_data()
+@web_routes.route("/")
+@web_routes.route("/<chart_date>")
+@web_routes.route("/web/<chart_date>")
+def new_chart(chart_date):
+    tally = make_tally(chart_date)
+    chart = make_chart_w_features(chart_date)
+    count_data = format_count_data(chart_date)
     return render_template(
-        "home2.html",
+        "home.html",
         count_data=count_data,
         tally=tally,
         chart_w_features=chart
     )
 
 
-@web_routes.route("/")
-@web_routes.route("/<chart_date>")
-@web_routes.route("/web/<chart_date>")
-def home_with_date(chart_date: str = None):
-    full_chart, chart_date = load_chart(chart_date)
-    chart_w_features = make_chart_w_features(full_chart)
+@web_routes.route("/report/<chart_date>")
+@verify_date
+def get_chart_delta(chart_date: Union[str, None] = None):
+    today_chart = get_parsed_chart(chart_date)
+
+    yesterday_date = get_date(chart_date, 1)
+    yesterday_chart = get_parsed_chart(yesterday_date)
+    added_to_chart = [
+        (
+            s.song_name,
+            s.primary_artist_name,
+            ', '.join([a.name for a in s.artists]) if s.artists else ""
+        ) for s in today_chart if s not in yesterday_chart
+    ]
+    removed_from_chart = [
+        (
+            s.song_name,
+            s.primary_artist_name,
+            ', '.join([a.name for a in s.artists]) if s.artists else ""
+        ) for s in yesterday_chart if s not in today_chart
+    ]
     return render_template(
-        "home.html",
-        chart_w_features=chart_w_features,
-        chart_date=chart_date,
-        gender_counts_full=get_gender_counts_prep(full_chart, return_dict=True),
-        gender_count_data=get_count_data(full_chart),
-        gender_counts_keys=get_gender_counts_keys
-        )
+        "report.html",
+        new_chart_date=chart_date,
+        old_chart_date=yesterday_date,
+        added_to_chart=added_to_chart,
+        removed_from_chart=removed_from_chart
+    )
+
 
 # @web_routes.route("/update")
 # def update():
@@ -75,33 +95,3 @@ def home_with_date(chart_date: str = None):
 #         added_to_chart=added_to_chart,
 #         removed_from_chart=removed_from_chart
 #         )
-
-
-@web_routes.route("/report")
-def report():
-    """
-    Shows the differences between today and yesterday and any unknowns.
-    """
-    today_chart, today_date = load_chart()
-    yesterday_chart, yesterday_date = load_chart(get_date(1))
-
-    not_in_yesterday, not_in_today = get_chart_delta(today_chart, yesterday_chart)
-
-    counts = get_daily_gender_counts()
-
-    return render_template(
-        "report.html",
-        counts=counts,
-        new_chart_date=today_date,
-        old_chart_date=yesterday_date,
-        added_to_chart=not_in_yesterday,
-        removed_from_chart=not_in_today
-        )
-
-# @web_routes.route("/")
-# @web_routes.route("/<chart_date>")
-# @web_routes.route("/web/<chart_date>")
-# def home_with_date(chart_date: str=None):
-#     full_chart, chart_date = load_chart(chart_date)
-#     chart = Chart(full_chart, chart_date)
-#     return render_template("home.html", chart=chart)

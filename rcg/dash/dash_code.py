@@ -9,7 +9,7 @@ from rcg.src.dates import get_most_recent_chart_date
 from ..config.config import COLORS
 
 
-def bar_grapher_generator(date_: str = None):
+def bar_grapher_generator(date_: Union[str, None] = None):
     date_ = get_most_recent_chart_date() if not date_ else date_
     full_chart, chart_date = load_chart(date_)
     bg = BarGrapher(full_chart, chart_date)

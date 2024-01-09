@@ -1,75 +1,97 @@
 <html>
-<head>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/stylesheet.css') }}">
+    <head>
+        <link rel="stylesheet" type="text/css"
+            href="{{ url_for('static',filename='styles/stylesheet.css') }}">
 
-</head>
-<body>
-<div class="wrapper">
-    <h1 class="site-title s-green">
-        <a id="Top"></a>
-        <a href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd">Rap Caviar</a> Gender Tracker
-    </h1>
-    <h2 class="site-title">{{ chart_date }}</h2>
-    <ul class="spacer">
-        <li><a href="#Tally">Breakdown by artist</a></li>
-        <li><a href="#FullChart">Current chart</a></li>
-        <li><a href="#Faq">FAQ</a></li>
-    </ul>
+    </head>
+    <body>
+        <div class="wrapper">
+            <h1 class="site-title s-green">
+                <a id="Top"></a>
+                <a
+                    href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd">Rap
+                    Caviar</a> Gender Tracker
+            </h1>
+            <h2 class="site-title">{{ chart_date }}</h2>
+            <ul class="spacer">
+                <li><a href="#Tally">Breakdown by artist</a></li>
+                <li><a href="#FullChart">Current chart</a></li>
+                <li><a href="#Faq">FAQ</a></li>
+            </ul>
 
-    <div class="spacer">
-        {% for g in ['Male', 'Female', 'Non-Binary'] %}
-        <h4 class="site-title">
-            <span class="{{ g }}">
-                {{ g }}: </span>{{ gender_count_data.get(g)['Total'] }} Credits ({{ gender_count_data.get(g)['Percentage'] }}%)</h4>
-        {% endfor %}
-    </div>
+            <div class="spacer">
+                {% for g in ['Male', 'Female', 'Non-Binary'] %}
+                <h4 class="site-title">
+                    <span class="{{ g }}">
+                        {{ g }}: </span>{{ count_data.get(g)['Total'] }} Credits
+                    ({{ count_data.get(g)['Percentage'] }}%)</h4>
+                {% endfor %}
+            </div>
 
-    <div class="bar-chart-container">
-        <iframe src="dashapp/bars/?{{request.path[1:]}}" width=700 height=500 ></iframe>
-    </div>
+            <div class="bar-chart-container">
+                <iframe src="dashapp/bars/?{{request.path[1:]}}" width=700
+                    height=500></iframe>
+            </div>
 
-    <h2 class="chart-title"><a id="Tally"></a><a href="#Top">Tally</a></h2>
-    {% for g in ['male', 'female', 'non-binary'] %}
-    <h4 class="col-head {{g}}">{{g.title()}}</h4>
-    {% endfor %}
+            <h2 class="chart-title"><a id="Tally"></a><a
+                    href="#Top">Tally</a></h2>
+            {% for g in ['male', 'female', 'non-binary'] %}
+            <h4 class="col-head {{g}}">{{g.title()}}</h4>
+            {% endfor %}
 
-    {% for row in gender_counts_full %}
-        {% set class="even" if loop.index % 2 == 0 else "odd" %}
-        {% for a,c in gender_counts_keys() %}
-        <div class="grid-item {{class}} g{{loop.index}}">
-            <span class="tally-artist">{{row.get(a, None)}}</span><span class="tally-count">{{row.get(c,None)}}</span>
-        </div>
-        {% endfor %}
-    {% endfor %}
+            {% for row in tally %}
+            {% set class="even" if loop.index % 2 == 0 else "odd" %}
+            {% for artist in row %}
+            <div class="grid-item {{class}} g{{loop.index}}">
+                <span class="tally-artist">{{artist[0]}}</span>
+                <span class="tally-count">{{artist[-1]}}</span>
+            </div>
+            {% endfor %}
 
-    <h2 class="chart-title"><a id="FullChart"></a><a href="#Top">Full Chart</a></h2>
-    {% for c in ['Song', 'Primary Artist', 'Features'] %}
-    <h4 class="col-head">{{c}}</h4>
-    {% endfor %}
-    
-    {% for row in chart_w_features %}
-        {% set class="even" if loop.index % 2 == 0 else "odd" %}
-        {% for c in ['Song', 'Primary Artist', 'Features'] %}
-        <div class="grid-item {{class}} g{{loop.index}}">
-            <span class="tally-artist">{{row.get(c)}}</span>
-        </div>
-        {% endfor %}
-    {% endfor %}
+            {% endfor %}
 
+            <h2 class="chart-title"><a id="FullChart"></a><a href="#Top">Full
+                    Chart</a></h2>
+            {% for c in ['Song', 'Primary Artist', 'Features'] %}
+            <h4 class="col-head">{{c}}</h4>
+            {% endfor %}
 
-    <h2 class="chart-title"><a id="Faq"></a><a href="#Top">FAQ</a></h2>
-    <div class="faq">
-    <h4>
-    <ul>
-    <li>This is the gender balance for today's Spotify <a href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd">Rap Caviar</a> playlist, updated daily at midnight UTC.<br><br>
-    <li>Non-binary artists are included as well, although their data may only be present if there is a non-binary person on the chart.<br><br>
-    <li>Rap Caviar is only one of many many Spotify playlists and Spotify is only one of many music outlets, but its prominence still reflects industry trends in a way that I feel makes the point.<br><br>
-    <li>Genders are inferred automatically from the pronouns on an artist's Last FM and Wikipedia biographies, and manually corrected as needed. If anything looks wrong, <a href="https://twitter.com/steadynappin_">please let me know!</a>
-    </ul>
-    </h4>
-    </div>
-</div>
+            {% for row in chart_w_features %}
+            {% set class="even" if loop.index % 2 == 0 else "odd" %}
+            {% for a in row %}
+            <div class="grid-item {{class}} g{{loop.index}}">
+                <span class="tally-artist">{{a}}</span>
+            </div>
+            {% endfor %}
+            {% endfor %}
 
+            <h2 class="chart-title"><a id="Faq"></a><a href="#Top">FAQ</a></h2>
+            <div class="faq">
+                <h4>
+                    <ul>
+                        <li>This is the gender balance for today's Spotify <a
+                                href="https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd">Rap
+                                Caviar</a> playlist, updated daily at midnight
+                            UTC.<br><br>
+                            <li>Non-binary artists are included as well,
+                                although their data may only be present if there
+                                is a non-binary person on the chart.<br><br>
+                                <li>Rap Caviar is only one of many many Spotify
+                                    playlists and Spotify is only one of many
+                                    music outlets, but its prominence still
+                                    reflects industry trends in a way that I
+                                    feel makes the point.<br><br>
+                                    <li>Genders are inferred automatically from
+                                        the pronouns on an artist's Last FM and
+                                        Wikipedia biographies, and manually
+                                        corrected as needed. If anything looks
+                                        wrong, <a
+                                            href="https://twitter.com/steadynappin_">please
+                                            let me know!</a>
+                                    </ul>
+                                </h4>
+                            </div>
+                        </div>
 
-</body>
-</html>
+                    </body>
+                </html>
