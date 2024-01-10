@@ -1,22 +1,14 @@
 """
 Outloading non-dependant functions here to prevent circular imports!
 """
+import re
 from datetime import datetime as dt
 from datetime import timedelta
 from typing import Union
+
 from pytz import timezone
-import re
 
 from ..db import db_query
-
-
-def get_most_recent_chart_date() -> str:
-    """
-    Gets the most recent chart date.
-    """
-    most_recent_chart_date = db_query("select max(chart_date) from chart")
-    most_recent_chart_date = most_recent_chart_date[0][0]
-    return most_recent_chart_date
 
 
 def get_date(date: Union[str, dt, None] = None, offset: int = 0) -> str:
@@ -25,15 +17,33 @@ def get_date(date: Union[str, dt, None] = None, offset: int = 0) -> str:
 
     If offset, returns offset days ago. (offset=1 is yesterday)
     """
-    if isinstance(date, str):
-        assert re.match(r"\d{4}-\d{2}-\d{2}", date), "chart_date format must be YYYY-MM-DD"
+    if not date:
+        date = dt.now()
+    elif isinstance(date, str):
+        assert re.match(r"\d{4}-\d{2}-\d{2}", date), f"chart_date ({date}) format is not YYYY-MM-DD"
         date = dt.strptime(date, "%Y-%m-%d")
-    else:
-        date = date if date else timezone('US/Eastern').localize(dt.now())
+    date = timezone('US/Eastern').localize(date)
+    most_recent_chart_date = get_most_recent_chart_date(True)
+    if date > most_recent_chart_date:
+        date = most_recent_chart_date
     if offset:
         date = date - timedelta(offset)
     date = date.strftime("%Y-%m-%d")
     return date
+
+
+def get_most_recent_chart_date(return_dt: bool = False) -> str:
+    """
+    Gets the most recent chart date.
+    """
+    most_recent_chart_date = db_query("select max(chart_date) from chart")
+    most_recent_chart_date = most_recent_chart_date[0][0]
+    assert re.match(
+        r"\d{4}-\d{2}-\d{2}", most_recent_chart_date
+    ), "chart_date format must be YYYY-MM-DD"
+    if return_dt:
+        return timezone('US/Eastern').localize(dt.strptime(most_recent_chart_date, "%Y-%m-%d"))
+    return most_recent_chart_date
 
 
 def query_w_date(q: str, date_: str = None):
@@ -53,3 +63,6 @@ def verify_date(func):
         return func(chart_date, *args, **kwargs)
     return wrapper
 
+
+def rerun_with_most_recent(q):
+    return db_query(q.format(get_most_recent_chart_date()))

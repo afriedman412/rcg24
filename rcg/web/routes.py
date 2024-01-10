@@ -1,14 +1,12 @@
 import os
+import re
+from typing import Union
 
 from flask import Blueprint, jsonify, render_template
 
-from ..src import (
-    get_parsed_chart,
-    make_chart_w_features,
-    make_tally,
-    format_count_data)
+from ..src import (format_count_data, get_parsed_chart, make_chart_w_features,
+                   make_tally)
 from ..src.dates import get_date, verify_date
-from typing import Union
 
 web_routes = Blueprint("web_routes", __name__)
 
@@ -23,29 +21,31 @@ def chart():
 def testo():
     return " • ".join(["divorth???", os.getenv("LOCAL", "xxx")])
 
-
 @web_routes.route("/")
 @web_routes.route("/<chart_date>")
-@web_routes.route("/web/<chart_date>")
-def new_chart(chart_date):
+@verify_date
+def new_chart(chart_date: Union[str, None] = None):
     tally = make_tally(chart_date)
+    assert tally, f"no chart date for {chart_date}"
     chart = make_chart_w_features(chart_date)
     count_data = format_count_data(chart_date)
     return render_template(
         "home.html",
+        chart_date=chart_date,
         count_data=count_data,
         tally=tally,
         chart_w_features=chart
     )
 
-
+@web_routes.route("/report/")
 @web_routes.route("/report/<chart_date>")
-@verify_date
 def get_chart_delta(chart_date: Union[str, None] = None):
+    if not chart_date:
+        chart_date = get_date()
     today_chart = get_parsed_chart(chart_date)
-
     yesterday_date = get_date(chart_date, 1)
     yesterday_chart = get_parsed_chart(yesterday_date)
+    assert yesterday_chart, f"no chart for {yesterday_date}"
     added_to_chart = [
         (
             s.song_name,

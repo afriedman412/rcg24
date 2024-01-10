@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import List, Tuple, Union, Iterable, Any
+from typing import Any, Iterable, List, Tuple, Union
 
 from sqlalchemy.engine.cursor import CursorResult
 
@@ -39,8 +39,9 @@ def parse_track(track: dict) -> Track:
     Output:
         track_output (Track) - input track parsed into Track namedtuple
     """
-    artists = tuple(Artist._make([a['name'], a['id']]) for a in track['artists'])
+    artists = [Artist._make([a['name'], a['id']]) for a in track['artists']]
     artists = get_group_artists(artists)
+    assert isinstance(artists, tuple)
     track_output = Track._make(
         [
             track['name'],
@@ -53,7 +54,7 @@ def parse_track(track: dict) -> Track:
     return track_output
 
 
-def get_group_artists(artists: Iterable[Artist]) -> Iterable[Artist]:
+def get_group_artists(artists: Iterable[Artist]) -> Tuple[Artist]:
     """
     If artists is a group, get group artists.
 
@@ -61,14 +62,17 @@ def get_group_artists(artists: Iterable[Artist]) -> Iterable[Artist]:
         artists (list) - list of artists from a Track
 
     OUTPUT:
-        artists (list) - same list of artists with any group members added
+        artists (tuple) - same list of artists with any group members added
     """
+    new_artists = []
     for a in artists:
         group_artists = db_query(
             f'SELECT artist_name,artist_spotify_id from group_table where group_spotify_id="{a.spotify_id}"')
         if group_artists:
-            artists += [Artist._make(a) for a in group_artists]
-    return artists
+            artists.append([Artist._make(a) for a in group_artists])
+        else:
+            new_artists.append(a)
+    return tuple(new_artists)
 
 
 def chart_song_check(

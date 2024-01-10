@@ -1,11 +1,11 @@
 # db init
 import os
+from typing import Tuple, Union
 
 from pymysql import connect
 from pymysql.connections import Connection
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
-from typing import Tuple, Union
 
 
 def make_sql_connection() -> Connection:

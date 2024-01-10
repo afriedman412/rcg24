@@ -75,8 +75,8 @@ def gender_count(bio: str, return_counts: bool = False) -> Union[dict[str], str]
     counts = {
         d[0]: sum(
             [pronoun_count[p] for p in d[1]]
-            ) for d in data
-        }
+        ) for d in data
+    }
     if return_counts:
         return counts
     else:

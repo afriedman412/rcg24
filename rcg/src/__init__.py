@@ -1,13 +1,13 @@
 import os
-from typing import List, Tuple, Union, Dict
+from itertools import zip_longest
+from typing import Dict, List, Tuple, Union
 
 import spotipy
-from itertools import zip_longest
 
 from ..db import db_query
-from ..db.queries import chart_q, gender_count_q, tally_q, chart_w_features_q
+from ..db.queries import chart_q, chart_w_features_q, gender_count_q, tally_q
 from .dates import get_date, get_most_recent_chart_date, verify_date
-from .track import Track, Artist, add_artist, parse_chart, parse_track
+from .track import Artist, Track, add_artist, parse_chart, parse_track
 
 
 @verify_date
@@ -41,7 +41,7 @@ def format_count_data(chart_date: Union[str, None] = None) -> Dict[str, Dict[str
     count_dict = {
         g.lower()[0]: {
             'Total': next(d for d in count_data if d[0] == g.lower()[0])[1],
-            'Percentage': round(
+            'Normalized': round(
                 float(
                     next(d for d in count_data if d[0] == g.lower()[0])[2]
                 ), 3)
@@ -52,6 +52,9 @@ def format_count_data(chart_date: Union[str, None] = None) -> Dict[str, Dict[str
 
 @verify_date
 def get_parsed_chart(chart_date: Union[str, None] = None) -> List[Track]:
+    """
+    Presumes group artists are already queried!
+    """
     chart = db_query(chart_q.format(chart_date))
     unique_ids = set([t[1] for t in chart])
     parsed_chart = []
@@ -63,10 +66,10 @@ def get_parsed_chart(chart_date: Union[str, None] = None) -> List[Track]:
             (t[2], t[3]) for t in chart
             if t[1] == i and t[-1][0].lower() == 't'
         )
-        artists = [
+        artists = (
             Artist(t[2], t[3]) for t in chart
             if t[1] == i and t[-1][0].lower() == 'f'
-        ]
+        )
         track = Track._make(
             [
                 song_name,
@@ -83,7 +86,7 @@ def get_parsed_chart(chart_date: Union[str, None] = None) -> List[Track]:
 @verify_date
 def update_chart(
     chart_date: Union[str, None] = None,
-    chart: Union[list[Track], None] = None, 
+    chart: Union[list[Track], None] = None,
 ) -> List[Track]:
     """
     Updates chart for current date.
@@ -97,9 +100,8 @@ def update_chart(
 
     """
     live_chart = chart if chart else load_rap_caviar()
-    latest_chart_in_db = get_chart_from_db()
-
-    if new_chart_check(latest_chart_in_db, live_chart):
+    latest_chart_in_db = get_parsed_chart()
+    if set(tuple(live_chart)) == set(tuple(latest_chart_in_db)):
         print(f"no updates, chart date {chart_date}")
         return
     else:
@@ -186,9 +188,8 @@ def load_one_song(song_spotify_id: str) -> Track:
     return track
 
 
+@verify_date
 def get_chart_from_db(chart_date: str = None) -> Tuple[str, List[Track]]:
-    if not chart_date:
-        chart_date = db_query("select max(chart_date) from chart")[0][0]
     q = f"""
         SELECT song_name, primary_artist_name FROM chart WHERE chart_date = '{chart_date}'
         """

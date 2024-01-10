@@ -32,7 +32,7 @@ def test_chart(pretest):
     test_rc = json.load(open(os.path.join(test_dir, "test_chart.json")))
     test_chart = [parse_track(t['track']) for t in test_rc['tracks']['items']]
 
-    charted_output = update_chart(test_chart)
+    charted_output = update_chart("2024-01-01", test_chart)
     assert {t.song_spotify_id for t in test_chart} == {t.song_spotify_id for t in charted_output}
 
     assert db_query(

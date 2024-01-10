@@ -1,6 +1,6 @@
 from dash import html, register_page
 
-from rcg.dash.dash_code import bar_grapher_generator
+from rcg.dash.dashboard import bar_grapher_generator
 
 register_page(__name__)
 
