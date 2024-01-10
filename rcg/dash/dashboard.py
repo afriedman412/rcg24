@@ -50,8 +50,8 @@ def bar_grapher_generator(chart_date: Union[str, None] = None):
     chart_date = get_date(chart_date)
     count_data = format_count_data(chart_date)
     # transposing the count_data was easier than rewriting the code for getting count_data
-    count_data = {  
-        i:{g:count_data[g][i] for g in count_data.keys()} 
+    count_data = {
+        i: {g: count_data[g][i] for g in count_data.keys()}
         for i in ['Total', 'Normalized']
     }
     total = make_bar_graph(count_data['Total'], False, chart_date)
@@ -62,7 +62,8 @@ def bar_grapher_generator(chart_date: Union[str, None] = None):
                 className="bar-chart-container"
             )
             ]
- 
+
+
 def make_bar_graph(
         count_data: Dict[str, Dict[str, float]],
         normalize: bool,
@@ -79,7 +80,6 @@ def make_bar_graph(
                 textfont_color="white"
             )
         )
-    
     fig.update_layout(
             title={
                 'text': title_text.format(chart_date),
@@ -101,7 +101,7 @@ def make_bar_graph(
             xaxis=dict(color='white')
             )
     if normalize:
-            fig.update_traces(texttemplate='%{y:.1f}%')
+        fig.update_traces(texttemplate='%{y:.1f}%')
     class_name = 'bar-chart r' if normalize else 'bar-chart r'
     div = html.Div(Graph(
             id="normalized" if normalize else "total",

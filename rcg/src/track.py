@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Any, Iterable, List, Tuple, Union
+from typing import Any, List, Tuple, Union, Dict
 
 from sqlalchemy.engine.cursor import CursorResult
 
@@ -31,7 +31,7 @@ def parse_chart(chart: Union[Tuple[Any], CursorResult]) -> List[Track]:
     return [Track._make(t[2:]) for t in chart]
 
 
-def parse_track(track: dict) -> Track:
+def parse_track(track: Dict[Any, Any]) -> Track:
     """
     Input:
         track (dict) - spotify track from chart
@@ -39,7 +39,7 @@ def parse_track(track: dict) -> Track:
     Output:
         track_output (Track) - input track parsed into Track namedtuple
     """
-    artists = [Artist._make([a['name'], a['id']]) for a in track['artists']]
+    artists = tuple([Artist._make([a['name'], a['id']]) for a in track['artists']])
     artists = get_group_artists(artists)
     assert isinstance(artists, tuple)
     track_output = Track._make(
@@ -54,7 +54,7 @@ def parse_track(track: dict) -> Track:
     return track_output
 
 
-def get_group_artists(artists: Iterable[Artist]) -> Tuple[Artist]:
+def get_group_artists(artists: Tuple[Artist]) -> Tuple[Artist]:
     """
     If artists is a group, get group artists.
 
@@ -67,19 +67,24 @@ def get_group_artists(artists: Iterable[Artist]) -> Tuple[Artist]:
     new_artists = []
     for a in artists:
         group_artists = db_query(
-            f'SELECT artist_name,artist_spotify_id from group_table where group_spotify_id="{a.spotify_id}"')
+            f'''
+            SELECT artist_name,artist_spotify_id
+            FROM group_table
+            WHERE group_spotify_id="{a.spotify_id}"
+            ''')
         if group_artists:
-            artists.append([Artist._make(a) for a in group_artists])
+            new_artists.append([Artist._make(a) for a in group_artists])
         else:
             new_artists.append(a)
-    return tuple(new_artists)
+    new_artists = tuple(new_artists)
+    return new_artists
 
 
 def chart_song_check(
         song_spotify_id: str,
         primary_artist_spotify_id: str,
         chart_date: str
-) -> Union[Tuple, None]:
+) -> Union[Tuple[Any], None]:
     """
     Is the song song_spotify_id by artist_spotify_id already in the current chart?
 
@@ -101,7 +106,7 @@ def chart_song_check(
     )
 
 
-def artist_check(artist_spotify_id: str) -> Union[Tuple, None]:
+def artist_check(artist_spotify_id: str) -> Union[Tuple[Any], None]:
     """
     Is artist_spotify_id in the db?
     """
@@ -129,7 +134,7 @@ def add_artist(artist_name: str, artist_spotify_id: str) -> None:
     return
 
 
-def feature_check(song_spotify_id: str, artist_spotify_id: str) -> Union[Tuple, None]:
+def feature_check(song_spotify_id: str, artist_spotify_id: str) -> Union[Tuple[Any], None]:
     """
     Is artist_spotify_id's contribution to song_spotify_id in the db?
     """
@@ -179,7 +184,7 @@ def add_all_songs_and_artists(track: Track) -> None:
     for a in track.artists:
         if not feature_check(track.song_spotify_id, a.spotify_id):
             add_song_feature(track, a.name, a.spotify_id, primary)
-        if not artist_check(a.name, a.spotify_id):
+        if not artist_check(a.spotify_id):
             add_artist(a.name, a.spotify_id)
         primary = False
     return

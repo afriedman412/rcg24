@@ -1,6 +1,6 @@
 import os
 from itertools import zip_longest
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, Any
 
 import spotipy
 
@@ -11,7 +11,7 @@ from .track import Artist, Track, add_artist, parse_chart, parse_track
 
 
 @verify_date
-def make_tally(chart_date: Union[str, None] = None):
+def make_tally(chart_date: Union[str, None] = None) -> List[List[Tuple[Any]]]:
     tally = db_query(tally_q.format(chart_date))
     tally_formatted = [_ for _ in zip_longest(
         [t for t in tally if t[1] == 'm'],
@@ -22,7 +22,7 @@ def make_tally(chart_date: Union[str, None] = None):
 
 
 @verify_date
-def make_chart_w_features(chart_date: Union[str, None] = None):
+def make_chart_w_features(chart_date: Union[str, None] = None) -> List[List[str]]:
     chart = db_query(chart_w_features_q.format(chart_date))
     chart = [
         [
@@ -101,10 +101,7 @@ def update_chart(
     """
     live_chart = chart if chart else load_rap_caviar()
     latest_chart_in_db = get_parsed_chart()
-    if set(tuple(live_chart)) == set(tuple(latest_chart_in_db)):
-        print(f"no updates, chart date {chart_date}")
-        return
-    else:
+    if set(tuple(live_chart)) != set(tuple(latest_chart_in_db)):
         print(f"updating chart for {chart_date}")
         q = make_charting_query(live_chart, chart_date)
         db_query(q, commit=True)
@@ -128,6 +125,9 @@ def update_chart(
         new_chart = db_query(q)
         new_chart = parse_chart(new_chart)
         return new_chart
+    else:
+        print(f"no updates, chart date {chart_date}")
+        return
 
 
 def make_charting_query(chart: list[Track], chart_date: str) -> str:

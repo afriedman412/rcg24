@@ -1,6 +1,6 @@
 import os
 from collections import Counter
-from typing import Tuple, Union
+from typing import Any, Tuple
 
 import pylast
 import wikipedia
@@ -18,7 +18,7 @@ def lookup_gender(artist_name: str) -> Tuple[str, str, str]:
     return lfm_gender, wikipedia_gender, gender
 
 
-def access_lfm() -> None:
+def access_lfm() -> Any:
     """
     Instantiates a lastfm network object w credentials.
     """
@@ -37,12 +37,11 @@ def get_lastfm_gender(artist: str) -> str:
     lastfm_network = access_lfm()
     try:
         bio = pylast.Artist(artist, lastfm_network).get_bio_content(language="en")
-        if (not bio) or (bio.startswith('<a href="https://www.last.fm/music/')):
-            return "x"  # no last fm bio
-        else:
-            return gender_count(bio)
     except pylast.WSError:
         return "l"  # artist not found in last fm
+    if (not bio) or (bio.startswith('<a href="https://www.last.fm/music/')):
+        return "x"  # no last fm bio
+    return gender_count(bio)
 
 
 def get_wikipedia_gender(artist: str) -> str:
@@ -62,7 +61,7 @@ def get_wikipedia_gender(artist: str) -> str:
         return "p"  # page error
 
 
-def gender_count(bio: str, return_counts: bool = False) -> Union[dict[str], str]:
+def gender_count(bio: str) -> str:
     """
     Guesses gender based on pronouns in bio.
     """
@@ -77,13 +76,10 @@ def gender_count(bio: str, return_counts: bool = False) -> Union[dict[str], str]
             [pronoun_count[p] for p in d[1]]
         ) for d in data
     }
-    if return_counts:
-        return counts
-    else:
-        return max(counts, key=counts.get)
+    return max(counts, key=counts.get)
 
 
-def parse_genders(last_fm_gender, wikipedia_gender) -> str:
+def parse_genders(last_fm_gender: str, wikipedia_gender: str) -> str:
     """
     Logic to decide which gender to return (m, f, n, or x)
 

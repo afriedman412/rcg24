@@ -40,8 +40,8 @@ def get_gender(g: Literal["m", "f", "x", "n"]):
 def get_recent_chart():
     date_ = get_date()
     q = f"""
-        SELECT song_name, primary_artist_name, chart_date 
-        FROM chart 
+        SELECT song_name, primary_artist_name, chart_date
+        FROM chart
         WHERE chart_date = "{date_}"
         """
     return jsonify(db_query(q), 200)

@@ -1,5 +1,4 @@
 import os
-import re
 from typing import Union
 
 from flask import Blueprint, jsonify, render_template
@@ -21,6 +20,7 @@ def chart():
 def testo():
     return " • ".join(["divorth???", os.getenv("LOCAL", "xxx")])
 
+
 @web_routes.route("/")
 @web_routes.route("/<chart_date>")
 @verify_date
@@ -36,6 +36,7 @@ def new_chart(chart_date: Union[str, None] = None):
         tally=tally,
         chart_w_features=chart
     )
+
 
 @web_routes.route("/report/")
 @web_routes.route("/report/<chart_date>")
