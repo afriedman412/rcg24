@@ -56,12 +56,12 @@
             <h4 class="col-head">{{c}}</h4>
             {% endfor %}
 
-            {% for row in chart_w_features %}
+            {% for track in chart_w_features %}
             {% set class="even" if loop.index % 2 == 0 else "odd" %}
-            {% for a in row %}
-            <div class="grid-item {{class}} g{{loop.index}}">
-                <span class="tally-artist">{{a}}</span>
-            </div>
+            {% for i in ['song_name', 'primary_artist_name', 'features'] %}
+                <div class="grid-item {{class}} g{{loop.index}}">
+                    <span class="tally-artist">{{ track[i] }}</span>
+                </div>
             {% endfor %}
             {% endfor %}
 

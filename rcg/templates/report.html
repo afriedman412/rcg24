@@ -19,12 +19,12 @@
             <h4 class="col-head">{{c}}</h4>
             {% endfor %}
 
-            {% for row in added_to_chart %}
+            {% for track in added_to_chart %}
             {% set class="even" if loop.index % 2 == 0 else "odd" %}
-            {% for r in row %}
-            <div class="grid-item {{class}} g{{loop.index}}">
-                <span class="tally-artist">{{r}}</span>
-            </div>
+            {% for i in ['song_name', 'primary_artist_name', 'features'] %}
+                <div class="grid-item {{class}} g{{loop.index}}">
+                    <span class="tally-artist">{{ track[i] }}</span>
+                </div>
             {% endfor %}
             {% endfor %}
             {% else %}
@@ -38,12 +38,12 @@
             <h4 class="col-head">{{c}}</h4>
             {% endfor %}
 
-            {% for row in removed_from_chart %}
+            {% for track in removed_from_chart %}
             {% set class="even" if loop.index % 2 == 0 else "odd" %}
-            {% for r in row %}
-            <div class="grid-item {{class}} g{{loop.index}}">
-                <span class="tally-artist">{{r}}</span>
-            </div>
+            {% for i in ['song_name', 'primary_artist_name', 'features'] %}
+                <div class="grid-item {{class}} g{{loop.index}}">
+                    <span class="tally-artist">{{ track[i] }}</span>
+                </div>
             {% endfor %}
             {% endfor %}
             {% else %}

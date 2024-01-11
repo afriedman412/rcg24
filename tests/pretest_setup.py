@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from rcg.db import db_query, make_sql_engine
+from rcg.src.db import db_query, make_sql_engine
 
 
 def pretest_setup():

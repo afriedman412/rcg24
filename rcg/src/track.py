@@ -1,65 +1,163 @@
 from collections import namedtuple
-from typing import Any, List, Tuple, Union, Dict
+from typing import Any, Dict, Iterable, List, Tuple, Union
 
 from sqlalchemy.engine.cursor import CursorResult
 
-from ..db import db_query
+from .dates import verify_date
+from .db import db_query
 from .gender import lookup_gender
 
 Artist: tuple[str] = namedtuple(
     "Artist", [
         "name",
         "spotify_id",
-    ]
-)
-
-Track: tuple[str, str, Tuple[Artist], str, str] = namedtuple(
-    "Track", [
-        "song_name",
-        "song_spotify_id",
-        "artists",
-        "primary_artist_name",
-        "primary_artist_spotify_id"
+        "primary"
     ]
 )
 
 
-def parse_chart(chart: Union[Tuple[Any], CursorResult]) -> List[Track]:
-    """
-    Turns a chart queried from the db into a list of Tracks.
-    """
-    return [Track._make(t[2:]) for t in chart]
+def create_artist(name: str, spotify_id: str, primary: Union[str, bool] = False) -> Artist:
+    if isinstance(primary, str) and primary in [True, 'True', 't']:
+        primary = True
+    return Artist(name, spotify_id, primary)
 
 
-def parse_track(track: Dict[Any, Any]) -> Track:
+class Track:
+    def __init__(
+            self,
+            song_name: str,
+            song_spotify_id: str,
+            artists: Tuple[Tuple[Artist]],
+            primary_artist: Artist = None
+    ):
+        self.song_name = song_name
+        self.song_spotify_id = song_spotify_id
+        self.artists = artists
+        if not primary_artist:
+            try:
+                primary_artist = next(a for a in artists if a.primary in ['T', 't', 'True', True])
+            except StopIteration:
+                raise StopIteration(f"no primary artists for {song_name}, (artists found: {artists})")
+        self.primary_artist_name = primary_artist.name
+        self.primary_artist_id = primary_artist.spotify_id
+        return
+
+    def __hash__(self):
+        return hash(self.song_spotify_id)
+
+    def __eq__(self, other):
+        return isinstance(other, Track) and self.song_spotify_id == other.song_spotify_id
+
+    def __repr__(self):
+        return ", ".join([
+            self.song_name,
+            self.primary_artist_name,
+            self.features
+        ])
+
+    @property
+    def features(self):
+        featured = [a.name for a in self.artists if a.primary != True]
+        return ", ".join(featured) if featured else ""
+
+    def _todict(self):
+        """For Jinja, because getattr() doesn't work in Jinja"""
+        return {k: self.__getattribute__(k) for k in ['primary_artist_name', 'song_name', 'features']}
+
+
+class Chart:
+    def __init__(
+            self,
+            chart_date: str,
+            tracks: Iterable[Track]
+    ):
+        self.chart_date = chart_date
+        self.tracks = set(tracks)
+        return
+
+    def __iter__(self):
+        return iter(self.tracks)
+
+    def __repr__(self):
+        return (t for t in self.tracks)
+
+    def __hash__(self):
+        return hash(self.tracks)
+
+    def __eq__(self, other):
+        return isinstance(other, Chart) and self.tracks == other.tracks
+
+    def make_charting_query(self) -> str:
+        """
+        Constructs a single query string for adding all tracks to the database.
+
+        OUTPUT:
+            q (str): mysql query string
+        """
+        q = """
+                INSERT INTO
+                chart (song_name, song_spotify_id, primary_artist_name,
+                primary_artist_spotify_id, chart_date)
+                VALUES """
+
+        q += ",\n".join(
+            [
+                "(" + ", ".join(
+                    f'"{p}"' for p in
+                    [
+                        track.song_name,
+                        track.song_spotify_id,
+                        track.primary_artist_name,
+                        track.primary_artist_id,
+                        self.chart_date
+                    ]) + ")"
+                for track in self.tracks
+            ]
+        )
+        return q
+
+
+def parse_spotify_track(track: Dict[Any, Any]) -> Track:
     """
     Input:
         track (dict) - spotify track from chart
 
     Output:
-        track_output (Track) - input track parsed into Track namedtuple
+        track_output (Track) - input track parsed into Track class
     """
-    artists = tuple([Artist._make([a['name'], a['id']]) for a in track['artists']])
-    artists = get_group_artists(artists)
-    assert isinstance(artists, tuple)
-    track_output = Track._make(
-        [
-            track['name'],
-            track['id'],
-            artists,
-            artists[0].name,
-            artists[0].spotify_id
-        ]
+    artists = [create_artist(a['name'], a['id'], i==0) for i, a in enumerate(track['track']['artists'])]
+    artists += get_group_artists(artists)
+    return Track(
+        track['track']['name'],
+        track['track']['id'],
+        artists
     )
-    return track_output
 
 
-def get_group_artists(artists: Tuple[Artist]) -> Tuple[Artist]:
+@verify_date
+def parse_spotify_chart(chart_date: str, raw_chart: Dict[Any, Any]) -> Chart:
+    """
+    Converts a spotify chart (dict) into a Chart.
+
+    INPUTS:
+        chart_date (str) - should be current date, but leaving it variable for qc and testing.
+            (load_rap_caviar() automatically uses current date)
+        raw_chart (dict) - spotify chart
+
+    OUTPUT:
+        parsed_chart (Chart)
+    """
+    tracks = [parse_spotify_track(t) for t in raw_chart['tracks']['items']]
+    parsed_chart = Chart(chart_date, tracks)
+    return parsed_chart
+
+
+def get_group_artists(artists: List[Artist]) -> List[Artist]:
     """
     If artists is a group, get group artists.
 
     INPUT:
-        artists (list) - list of artists from a Track
+        artists (list) - list of artists from a Track -- can be a tuple?
 
     OUTPUT:
         artists (tuple) - same list of artists with any group members added
@@ -73,10 +171,7 @@ def get_group_artists(artists: Tuple[Artist]) -> Tuple[Artist]:
             WHERE group_spotify_id="{a.spotify_id}"
             ''')
         if group_artists:
-            new_artists.append([Artist._make(a) for a in group_artists])
-        else:
-            new_artists.append(a)
-    new_artists = tuple(new_artists)
+            new_artists.append([create_artist(a[0], a[1]) for a in group_artists])
     return new_artists
 
 

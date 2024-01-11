@@ -1,7 +1,7 @@
 from flask_testing import TestCase
 
 from app import app
-from rcg.db import db_query
+from rcg.src.db import db_query
 
 
 class TestFolio(TestCase):

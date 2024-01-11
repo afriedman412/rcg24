@@ -3,7 +3,7 @@ import plotly.graph_objs as go
 from dash import html, register_page
 from dash.dcc import Graph
 
-from rcg.db import db_query
+from rcg.src.db import db_query
 
 register_page(__name__)
 

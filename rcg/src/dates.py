@@ -4,11 +4,11 @@ Outloading non-dependant functions here to prevent circular imports!
 import re
 from datetime import datetime as dt
 from datetime import timedelta
-from typing import Union, Callable
+from typing import Callable, Union
 
 from pytz import timezone
 
-from ..db import db_query
+from .db import db_query
 
 
 def get_date(date: Union[str, dt, None] = None, offset: int = 0) -> str:
@@ -44,6 +44,9 @@ def get_most_recent_chart_date() -> str:
 
 
 def verify_date(func: Callable) -> Callable:
+    """
+    To be used as a decorator for functions that need a chart date.
+    """
     def wrapper(chart_date: Union[str, None] = None, *args, **kwargs):
         if not chart_date:
             chart_date = get_date()

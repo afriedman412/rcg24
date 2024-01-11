@@ -1,13 +1,14 @@
 import os
 from itertools import zip_longest
-from typing import Dict, List, Tuple, Union, Any
+from typing import Any, Dict, List, Tuple, Union
 
 import spotipy
 
-from ..db import db_query
-from ..db.queries import chart_q, chart_w_features_q, gender_count_q, tally_q
-from .dates import get_date, get_most_recent_chart_date, verify_date
-from .track import Artist, Track, add_artist, parse_chart, parse_track
+from .dates import verify_date
+from .db import db_query
+from .queries import features_q, gender_count_q, tally_q
+from .track import (Chart, Track, add_artist, create_artist,
+                    parse_spotify_chart, parse_spotify_track)
 
 
 @verify_date
@@ -22,17 +23,18 @@ def make_tally(chart_date: Union[str, None] = None) -> List[List[Tuple[Any]]]:
 
 
 @verify_date
-def make_chart_w_features(chart_date: Union[str, None] = None) -> List[List[str]]:
-    chart = db_query(chart_w_features_q.format(chart_date))
-    chart = [
-        [
-            t[0],
-            t[1],
-            t[2].replace(",", ", ") if t[2] else ""
-        ]
-        for t in chart
-    ]
-    return chart
+def load_chart(chart_date: Union[str, None] = None) -> Chart:
+    """
+    Loads a chart from the db and parses it into a Chart object.
+    """
+    features = db_query(features_q.format(chart_date))
+    unique_ids = set([t[1] for t in features])
+    chart_tracks = []
+    for i in unique_ids:
+        song_features = [t for t in features if t[1] == i]
+        artists = [create_artist(*t[2:]) for t in song_features]
+        chart_tracks.append(Track(song_features[0][0], i, artists))
+    return Chart(chart_date, chart_tracks)
 
 
 @verify_date
@@ -51,112 +53,49 @@ def format_count_data(chart_date: Union[str, None] = None) -> Dict[str, Dict[str
 
 
 @verify_date
-def get_parsed_chart(chart_date: Union[str, None] = None) -> List[Track]:
-    """
-    Presumes group artists are already queried!
-    """
-    chart = db_query(chart_q.format(chart_date))
-    unique_ids = set([t[1] for t in chart])
-    parsed_chart = []
-    for i in unique_ids:
-        song_name = next(
-            t[0] for t in chart if t[1] == i
-        )
-        primary_artist_info = next(
-            (t[2], t[3]) for t in chart
-            if t[1] == i and t[-1][0].lower() == 't'
-        )
-        artists = (
-            Artist(t[2], t[3]) for t in chart
-            if t[1] == i and t[-1][0].lower() == 'f'
-        )
-        track = Track._make(
-            [
-                song_name,
-                i,
-                artists,
-                primary_artist_info[0],
-                primary_artist_info[1]
-            ]
-        )
-        parsed_chart.append(track)
-    return parsed_chart
-
-
-@verify_date
 def update_chart(
     chart_date: Union[str, None] = None,
-    chart: Union[list[Track], None] = None,
-) -> List[Track]:
+    chart: Union[Chart, None] = None,
+) -> Chart:
     """
     Updates chart for current date.
 
     INPUTS:
-        chart (List[Track]): chart to be added to db. Uses latest rap caviar if none provided.
+        chart (Chart): chart to be added to db. Uses latest rap caviar if none provided.
         chart_date (str): date of chart to be added. Uses today via get_date() if none provided.
 
     OUTPUT:
-        new_chart (List[Track]): chart for `chart_date`, which should be `chart`
+        new_chart (Chart]): chart for `chart_date`, which should be `chart`.
+            Returns latest chart in db if no changes.
 
     """
-    live_chart = chart if chart else load_rap_caviar()
-    latest_chart_in_db = get_parsed_chart()
-    if set(tuple(live_chart)) != set(tuple(latest_chart_in_db)):
+    live_chart = chart if chart else load_spotify_chart()
+    latest_chart_in_db = load_chart()
+    if live_chart.tracks != latest_chart_in_db.tracks:
         print(f"updating chart for {chart_date}")
-        q = make_charting_query(live_chart, chart_date)
+        q = live_chart.make_charting_query()
         db_query(q, commit=True)
         print(f"chart date updated for {chart_date}")
 
-        all_ids = [a[0] for a in db_query("select spotify_id from artist")]
+        # this could all be done in SQL
+        all_artist_ids = [a[0] for a in db_query("select distinct spotify_id from artist")]
 
         new_artists = {
             a
             for t in live_chart
             for a in t.artists
-            if a.spotify_id not in all_ids
+            if a.spotify_id not in all_artist_ids
         }
 
         for a in new_artists:
             add_artist(a.name, a.spotify_id)
 
-        q = f"""
-            SELECT * FROM chart WHERE chart_date = "{chart_date}"
-            """
-        new_chart = db_query(q)
-        new_chart = parse_chart(new_chart)
+        new_chart = load_chart()
+        assert new_chart.tracks == live_chart.tracks
         return new_chart
     else:
         print(f"no updates, chart date {chart_date}")
-        return
-
-
-def make_charting_query(chart: list[Track], chart_date: str) -> str:
-    q = """
-            INSERT INTO
-            chart (song_name, song_spotify_id, primary_artist_name,
-            primary_artist_spotify_id, chart_date)
-            VALUES """
-
-    q += ",\n".join(
-        [
-            "(" + ", ".join(
-                f'"{p}"' for p in
-                [
-                    track.song_name,
-                    track.song_spotify_id,
-                    track.primary_artist_name,
-                    track.primary_artist_spotify_id,
-                    chart_date
-                ]) + ")"
-            for track in chart
-        ]
-    )
-    return q
-
-
-def new_chart_check(latest_chart, current_chart) -> bool:
-    return {t[2] for t in latest_chart} == {t[1] for t in current_chart} \
-        and get_date() == get_most_recent_chart_date()
+        return latest_chart_in_db
 
 
 def load_spotipy() -> spotipy.Spotify:
@@ -171,29 +110,33 @@ def load_spotipy() -> spotipy.Spotify:
     return sp
 
 
-def load_rap_caviar() -> list[Track]:
+def load_spotify_chart(chart_id: str = 'spotify:playlist:37i9dQZF1DX0XUsuxWHRQd') -> Chart:
     """
-    Loads the current rap caviar playlist from Spotify.
+    Loads playlist from Spotify at the proivded chart_id. Defaut is for Rap Caviar.
+
+    INPUTS:
+        chart_id (str)
+
+    OUTPUT:
+        chart (Chart)
     """
     sp = load_spotipy()
-    rc = sp.playlist('spotify:playlist:37i9dQZF1DX0XUsuxWHRQd')
-    current_chart = [parse_track(t['track']) for t in rc['tracks']['items']]
-    return current_chart
+    rc = sp.playlist(chart_id)
+    chart = parse_spotify_chart(rc)
+    return chart
 
 
 def load_one_song(song_spotify_id: str) -> Track:
+    """
+    Utility function, not actually in use.
+
+    INPUT:
+        song_spotify_id (str)
+
+    OUTPUT:
+        track (Track)
+    """
     sp = load_spotipy()
     track = sp.track(song_spotify_id)
-    track = parse_track(track)
+    track = parse_spotify_track(track)
     return track
-
-
-@verify_date
-def get_chart_from_db(chart_date: str = None) -> Tuple[str, List[Track]]:
-    q = f"""
-        SELECT song_name, primary_artist_name FROM chart WHERE chart_date = '{chart_date}'
-        """
-    raw_chart = db_query(q)
-    assert raw_chart, f"No chart found for {chart_date}"
-    chart = parse_chart(raw_chart)
-    return chart_date, chart

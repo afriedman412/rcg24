@@ -16,24 +16,10 @@ from . import db_query
 db_routes = Blueprint("db_routes", __name__)
 
 
-@db_routes.route("/rcg/update/", methods=["GET"])
+@db_routes.route("/update/XXYYXX", methods=["GET"])
 def update():
     output = update_chart()
     return jsonify(output, 200)
-
-
-@db_routes.route("/rcg/count/<g>", methods=["GET"])
-def get_gender(g: Literal["m", "f", "x", "n"]):
-    date_ = get_date()
-    q = f"""
-        SELECT count(*)
-        FROM chart
-        LEFT JOIN song on chart.song_spotify_id=song.song_spotify_id
-        LEFT JOIN artist on song.artist_spotify_id = artist.spotify_id
-        WHERE chart_date="{date_}"
-        AND gender="{g}";
-        """
-    return jsonify(db_query(q), 200)
 
 
 @db_routes.route("/rcg/chart/", methods=["GET"])

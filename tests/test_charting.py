@@ -3,10 +3,11 @@ import os
 
 import pytest
 
-from rcg.db import db_query
+from rcg.src.db import db_query
 from rcg.src import load_spotipy, update_chart
+from rcg.src.dates import get_most_recent_chart_date
 from rcg.src.gender import lookup_gender
-from rcg.src.track import parse_track
+from rcg.src.track import parse_spotify_chart
 from tests.pretest_setup import pretest_setup
 
 
@@ -30,10 +31,10 @@ def test_spotipy():
 def test_chart(pretest):
     test_dir = pretest
     test_rc = json.load(open(os.path.join(test_dir, "test_chart.json")))
-    test_chart = [parse_track(t['track']) for t in test_rc['tracks']['items']]
-
+    test_chart = parse_spotify_chart(raw_chart=test_rc)
+    assert get_most_recent_chart_date().strftime("%Y-%m-%d") == "2022-12-31"
     charted_output = update_chart("2024-01-01", test_chart)
-    assert {t.song_spotify_id for t in test_chart} == {t.song_spotify_id for t in charted_output}
+    assert test_chart == charted_output
 
     assert db_query(
         "select distinct(song_name) from chart where primary_artist_name='Drake'"
