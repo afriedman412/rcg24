@@ -7,8 +7,8 @@ import spotipy
 from .dates import verify_date
 from .db import db_query
 from .queries import features_q, gender_count_q, tally_q
-from .track import (Chart, Track, add_artist, create_artist,
-                    parse_spotify_chart, parse_spotify_track)
+from .track import (Chart, Track, add_artist_to_db, create_artist,
+                    parse_spotify_chart, parse_spotify_track, add_song_feature)
 
 
 @verify_date
@@ -54,8 +54,8 @@ def format_count_data(chart_date: Union[str, None] = None) -> Dict[str, Dict[str
 
 @verify_date
 def update_chart(
-    chart_date: Union[str, None] = None,
-    chart: Union[Chart, None] = None,
+    chart_date: Union[str, None],
+    live_rc_chart: Chart
 ) -> Chart:
     """
     Updates chart for current date.
@@ -69,29 +69,54 @@ def update_chart(
             Returns latest chart in db if no changes.
 
     """
-    live_chart = chart if chart else load_spotify_chart()
     latest_chart_in_db = load_chart()
-    if live_chart.tracks != latest_chart_in_db.tracks:
+    if live_rc_chart.tracks != latest_chart_in_db.tracks:
         print(f"updating chart for {chart_date}")
-        q = live_chart.make_charting_query()
+        q = live_rc_chart.make_charting_query()
         db_query(q, commit=True)
         print(f"chart date updated for {chart_date}")
-
-        # this could all be done in SQL
-        all_artist_ids = [a[0] for a in db_query("select distinct spotify_id from artist")]
-
-        new_artists = {
-            a
-            for t in live_chart
-            for a in t.artists
-            if a.spotify_id not in all_artist_ids
-        }
-
-        for a in new_artists:
-            add_artist(a.name, a.spotify_id)
-
         new_chart = load_chart()
-        assert new_chart.tracks == live_chart.tracks
+        assert new_chart.tracks == live_rc_chart.tracks, str([len(new_chart.tracks), len(live_rc_chart.tracks)])
+
+        appearances_in_db = db_query(f"""
+            SELECT distinct
+                chart.song_spotify_id,
+                artist.spotify_id
+            FROM chart
+            INNER JOIN song ON chart.song_spotify_id=song.song_spotify_id
+            LEFT JOIN artist ON song.artist_spotify_id=artist.spotify_id
+            WHERE chart_date='{chart_date}'
+            """)
+
+        new_appearances = [
+            a for a in new_chart.appearances
+            if (a.song_spotify_id, a.artist_spotify_id)
+            not in appearances_in_db
+        ]
+
+        for a in new_appearances:
+            add_song_feature(
+                a.song_name,
+                a.song_spotify_id,
+                a.name,
+                a.id,
+                a.primary
+                )
+
+        new_artist_ids = db_query(f"""
+            SELECT song.artist_spotify_id
+            FROM chart
+            INNER JOIN song ON chart.song_spotify_id=song.song_spotify_id
+            WHERE chart_date='{chart_date}' AND song.spotify_id not in (
+                               SELECT spotify_id FROM artist
+            )
+            """)
+
+        for a in [
+            a for a in new_chart.appearances
+            if a.artist_spotify_id in new_artist_ids
+        ]:
+            add_artist_to_db(a.name, a.spotify_id)
         return new_chart
     else:
         print(f"no updates, chart date {chart_date}")

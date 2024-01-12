@@ -14,6 +14,8 @@ def pretest_setup():
         df = pd.read_csv(os.path.join(test_dir, f'{t}_df.csv'))
         df.to_sql(t, con=engine, if_exists='replace', index=False)
     print('db setup!')
+    assert db_query('select count(*) from chart where chart_date="2022-12-31"'
+                    ) == ((50,),)
     assert db_query('select artist_name from artist where spotify_id="4kYSro6naA4h99UJvo89HB"'
                     ) == (('Cardi B',),)
     assert db_query(

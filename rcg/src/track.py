@@ -1,8 +1,6 @@
 from collections import namedtuple
 from typing import Any, Dict, Iterable, List, Tuple, Union
 
-from sqlalchemy.engine.cursor import CursorResult
-
 from .dates import verify_date
 from .db import db_query
 from .gender import lookup_gender
@@ -33,6 +31,7 @@ class Track:
         self.song_name = song_name
         self.song_spotify_id = song_spotify_id
         self.artists = artists
+        assert [isinstance(a.name, str) for a in self.artists]
         if not primary_artist:
             try:
                 primary_artist = next(a for a in artists if a.primary in ['T', 't', 'True', True])
@@ -57,8 +56,21 @@ class Track:
 
     @property
     def features(self):
-        featured = [a.name for a in self.artists if a.primary != True]
-        return ", ".join(featured) if featured else ""
+        featured = [str(a.name) for a in self.artists if a.primary is not True]
+        if len(featured) < 1:
+            return ""
+        return ", ".join(featured)
+
+    @property
+    def appearances(self):
+        """
+        For adding to songs table.
+
+        song_spotify_id, song_name, artist_spotify_id, artist_name, primary
+        """
+        return [
+            (self.song_spotify_id, self.song_name, a.spotify_id, a.name, a.primary) for a in self.artists
+        ]
 
     def _todict(self):
         """For Jinja, because getattr() doesn't work in Jinja"""
@@ -78,14 +90,17 @@ class Chart:
     def __iter__(self):
         return iter(self.tracks)
 
-    def __repr__(self):
-        return (t for t in self.tracks)
-
     def __hash__(self):
         return hash(self.tracks)
 
     def __eq__(self, other):
         return isinstance(other, Chart) and self.tracks == other.tracks
+    
+    def appearances(self):
+        return [
+            a for t in self.tracks
+            for a in t.appearances
+        ]
 
     def make_charting_query(self) -> str:
         """
@@ -125,7 +140,7 @@ def parse_spotify_track(track: Dict[Any, Any]) -> Track:
     Output:
         track_output (Track) - input track parsed into Track class
     """
-    artists = [create_artist(a['name'], a['id'], i==0) for i, a in enumerate(track['track']['artists'])]
+    artists = [create_artist(a['name'], a['id'], i == 0) for i, a in enumerate(track['track']['artists'])]
     artists += get_group_artists(artists)
     return Track(
         track['track']['name'],
@@ -210,7 +225,7 @@ def artist_check(artist_spotify_id: str) -> Union[Tuple[Any], None]:
     )
 
 
-def add_artist(artist_name: str, artist_spotify_id: str) -> None:
+def add_artist_to_db(artist_name: str, artist_spotify_id: str) -> None:
     """
     INPUTS:
         artist_name (str)
@@ -243,7 +258,8 @@ def feature_check(song_spotify_id: str, artist_spotify_id: str) -> Union[Tuple[A
 
 
 def add_song_feature(
-        track: Track,
+        song_name: str,
+        song_spotify_id: str,
         artist_name: str,
         artist_spotify_id: str,
         primary: bool = False) -> None:
@@ -251,7 +267,8 @@ def add_song_feature(
     Add song feature.
 
     INPUTS:
-        track (Track)
+        song_name (str)
+        song_spotify_id (str)
         artist_name (str)
         artist_spotify_id (str)
         primary (bool) - is the artist the primary artist?
@@ -262,8 +279,8 @@ def add_song_feature(
         VALUES (""" + ", ".join(
         f'"{p}"' for p in
         [
-            track.song_name,
-            track.song_spotify_id,
+            song_name,
+            song_spotify_id,
             artist_name,
             artist_spotify_id,
             primary]) + ");"
@@ -280,6 +297,6 @@ def add_all_songs_and_artists(track: Track) -> None:
         if not feature_check(track.song_spotify_id, a.spotify_id):
             add_song_feature(track, a.name, a.spotify_id, primary)
         if not artist_check(a.spotify_id):
-            add_artist(a.name, a.spotify_id)
+            add_artist_to_db(a.name, a.spotify_id)
         primary = False
     return
