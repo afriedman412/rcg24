@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 
 
-def make_sql_connection() -> Connection[Any]:
+def make_sql_connection() -> Connection:
     if "MYSQL_PW" in os.environ:
         conn = connect(
             user=os.environ["MYSQL_USER"],
@@ -51,7 +51,7 @@ def make_sql_engine() -> Engine:
 
 def db_query(
     q: str,
-    conn: Union[Connection[Any], None] = None,
+    conn: Union[Connection, None] = None,
     commit: bool = False,
     close: bool = True
 ) -> Any:
