@@ -1,6 +1,3 @@
-"""
-Outloading non-dependant functions here to prevent circular imports!
-"""
 import re
 from datetime import datetime as dt
 from datetime import timedelta

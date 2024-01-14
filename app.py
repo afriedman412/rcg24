@@ -1,7 +1,7 @@
-import os
-from flask import url_for
+from flask import url_for, request
 from rcg.app_prep import app
 from rcg.web.routes import web_routes
+
 
 @app.route("/favicon.ico")
 def favicon():

@@ -1,6 +1,6 @@
 # db init
 import os
-from typing import Any, Tuple, Union
+from typing import Any, Union
 
 from pymysql import connect
 from pymysql.connections import Connection

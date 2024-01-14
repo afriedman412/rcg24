@@ -3,8 +3,9 @@ from typing import Union
 
 from flask import Blueprint, jsonify, render_template
 
-from ..src import format_count_data, load_chart, make_tally, update_chart
+from ..src import format_count_data, load_chart, make_tally, load_spotify_chart
 from ..src.dates import get_date, verify_date
+from ..src.adding import add_chart_to_db
 
 web_routes = Blueprint("web_routes", __name__)
 
@@ -16,8 +17,9 @@ def testo():
 
 @web_routes.route("/update/XXYYXX", methods=["GET"])
 def update():
-    output = update_chart()
-    return jsonify(output, 200)
+    new_chart = load_spotify_chart()
+    add_chart_to_db(None, new_chart)
+    return jsonify({"Chart added to db"}, 200)
 
 
 @web_routes.route("/")

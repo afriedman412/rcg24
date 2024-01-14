@@ -6,7 +6,9 @@ from rcg.src.db import db_query, make_sql_engine
 
 
 def pretest_setup():
-    assert os.getenv("MYSQL_URL") == "localhost"
+    assert os.getenv("MYSQL_URL") in ['localhost', "rcg-mysql3.cyfinfkbv6lq.us-east-2.rds.amazonaws.com"]
+    if os.getenv("MYSQL_URL").startswith("rcg-mysql"):
+        os.environ['MYSQL_DB'] = 'rcg_testo'
     test_dir = os.path.join(os.getcwd(), "tests/test_data")
     engine = make_sql_engine()
     for t in ['artist', 'group_table', 'chart', 'song']:
