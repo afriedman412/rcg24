@@ -1,7 +1,7 @@
 import re
 from datetime import datetime as dt
 from datetime import timedelta
-from typing import Callable, Union
+from typing import Callable, Union, Any
 
 from pytz import timezone
 
@@ -29,7 +29,7 @@ def get_date(date: Union[str, dt, None] = None, offset: int = 0) -> str:
     return date
 
 
-def get_most_recent_chart_date() -> str:
+def get_most_recent_chart_date() -> dt:
     """
     Gets the most recent chart date.
     """
@@ -40,11 +40,11 @@ def get_most_recent_chart_date() -> str:
     return timezone('US/Eastern').localize(dt.strptime(most_recent_chart_date, "%Y-%m-%d"))
 
 
-def verify_date(func: Callable) -> Callable:
+def verify_date(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
     """
     To be used as a decorator for functions that need a chart date.
     """
-    def wrapper(chart_date: Union[str, None] = None, *args, **kwargs):
+    def wrapper(chart_date: Union[str, None] = None, *args, **kwargs) -> Callable[[Any], Any]:
         if not chart_date:
             chart_date = get_date()
         assert re.match(r"\d{4}-\d{2}-\d{2}", chart_date), "chart_date format must be YYYY-MM-DD"

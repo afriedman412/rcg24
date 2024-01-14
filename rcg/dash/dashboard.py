@@ -1,6 +1,6 @@
 import re
 from typing import Dict, Union
-
+from flask import Flask
 from dash import Dash, html, page_container
 from dash.dcc import Graph, Location
 from dash.dependencies import Input, Output
@@ -12,7 +12,7 @@ from rcg.src.dates import get_date
 from ..config.config import COLORS
 
 
-def init_dashboard(server):
+def init_dashboard(server) -> Flask:
     """Create a Plotly Dash dashboard."""
     dash_app = Dash(
         use_pages=True,

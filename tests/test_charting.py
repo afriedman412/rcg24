@@ -51,7 +51,7 @@ def test_load_chart():
 def test_update_chart(pretest):
     test_rc = json.load(open(os.path.join(pretest, "test_chart.json")))
     test_chart: Chart = parse_spotify_chart("2023-01-01", raw_chart=test_rc)
-    assert len([a for a in test_chart.artists() if a.name == None]) == 0
+    assert len([a for a in test_chart.artists() if a.name is None]) == 0
     assert get_most_recent_chart_date().strftime("%Y-%m-%d") == "2022-12-31"
     logging.info("most recent chart date pre-update is correct")
     add_chart_to_db(test_chart)

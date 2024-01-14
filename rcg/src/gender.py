@@ -50,7 +50,6 @@ def get_wikipedia_gender(artist: str) -> str:
     """
     try:
         bio = wikipedia.page(artist, auto_suggest=False, redirect=True).content
-        return gender_count(bio)
     except wikipedia.DisambiguationError as e:
         try:
             artist_ = next(o for o in e.options if 'rapper' in o)
@@ -59,6 +58,7 @@ def get_wikipedia_gender(artist: str) -> str:
             return "d"  # disambiguation error
     except wikipedia.PageError:
         return "p"  # page error
+    return gender_count(bio)
 
 
 def gender_count(bio: str) -> str:

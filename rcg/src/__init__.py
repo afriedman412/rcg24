@@ -1,6 +1,6 @@
 import os
 from itertools import zip_longest
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple
 
 import spotipy
 
@@ -11,7 +11,7 @@ from .track import Appearance, Chart, Track, make_track_from_appearances
 
 
 @verify_date
-def make_tally(chart_date: Union[str, None] = None) -> List[List[Tuple[Any]]]:
+def make_tally(chart_date: str) -> List[List[Tuple[Any]]]:
     q = """
     SELECT
     artist.artist_name,
@@ -38,7 +38,7 @@ def make_tally(chart_date: Union[str, None] = None) -> List[List[Tuple[Any]]]:
 
 
 @verify_date
-def load_chart(chart_date: Union[str, None] = None) -> Chart:
+def load_chart(chart_date: str) -> Chart:
     """
     Loads a chart from the db and parses it into a Chart object.
     """
@@ -64,7 +64,7 @@ def load_chart(chart_date: Union[str, None] = None) -> Chart:
 
 
 @verify_date
-def format_count_data(chart_date: Union[str, None] = None) -> Dict[str, Dict[str, float]]:
+def format_count_data(chart_date: str) -> Dict[str, Dict[str, float]]:
     q = """
         SELECT
             gender,

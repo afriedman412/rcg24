@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Iterable, List, Tuple, Union
+from typing import List, Union, Any, Dict, Iterable
 
 Artist: tuple[str] = namedtuple(
     "Artist", [
@@ -33,7 +33,7 @@ class Track:
             self,
             song_name: str,
             song_spotify_id: str,
-            artists: Tuple[Artist],
+            artists: List[Artist],
             primary_artist: Union[Artist, None] = None
     ):
         self.song_name = song_name
@@ -50,10 +50,10 @@ class Track:
             f"bad formatting for primary artist, {song_name}, (artists found: {artists})"
         return
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.song_spotify_id + self.primary_artist_id)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         return isinstance(other, Track) and self.song_spotify_id == other.song_spotify_id
 
     @property
@@ -63,7 +63,7 @@ class Track:
             return ""
         return ", ".join(featured)
 
-    def format_for_charting(self, chart_date: str):
+    def format_for_charting(self, chart_date: str) -> str:
         return "(" + ", ".join(
             f'"{p}"' for p in
             [
@@ -84,7 +84,7 @@ class Track:
             Appearance(self.song_spotify_id, self.song_name, a.spotify_id, a.name, a.primary) for a in self.artists
         ]
 
-    def _todict(self):
+    def _todict(self) -> Dict[str, str]:
         """For Jinja, because getattr() doesn't work in Jinja"""
         return {k: self.__getattribute__(k) for k in ['primary_artist_name', 'song_name', 'features']}
 
@@ -99,13 +99,13 @@ class Chart:
         self.tracks = set(tracks)
         return
 
-    def __iter__(self):
+    def __iter__(self) -> Iterable[Track]:
         return iter(self.tracks)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.tracks)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         return isinstance(other, Chart) and self.tracks == other.tracks
 
     def appearances(self) -> list[Appearance]:
@@ -148,7 +148,7 @@ def create_artist(name: str, spotify_id: str, primary: Union[str, bool] = False)
     return Artist(name, spotify_id, primary)
 
 
-def make_track_from_appearances(appearances: Iterable[Appearance]) -> Track:
+def make_track_from_appearances(appearances: List[Appearance]) -> Track:
     return Track(
         song_name=appearances[0].song_name,
         song_spotify_id=appearances[0].song_spotify_id,

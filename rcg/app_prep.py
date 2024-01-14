@@ -4,11 +4,11 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=DeprecationWarning)
     import connexion
-
+from flask import Flask
 from dotenv import find_dotenv, load_dotenv
 
 
-def init_app():
+def init_app() -> Flask:
     """
     Construct core Flask application with embedded Dash app.
     """
@@ -23,7 +23,7 @@ def init_app():
     return app
 
 
-def augment_app(app):
+def augment_app(app: Flask) -> Flask:
     with app.app_context():
         from .dash.dashboard import init_dashboard
         app = init_dashboard(app)

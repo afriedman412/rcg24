@@ -1,5 +1,5 @@
 import os
-from typing import Union
+from typing import Union, Any
 
 from flask import Blueprint, jsonify, render_template
 
@@ -16,16 +16,16 @@ def testo():
 
 
 @web_routes.route("/update/XXYYXX", methods=["GET"])
-def update():
+def update() -> dict[Any, Any]:
     new_chart = load_spotify_chart()
-    add_chart_to_db(None, new_chart)
+    add_chart_to_db(new_chart)
     return jsonify({"Chart added to db"}, 200)
 
 
 @web_routes.route("/")
 @web_routes.route("/<chart_date>")
 @verify_date
-def new_chart(chart_date: Union[str, None] = None):
+def new_chart(chart_date: Union[str, None] = None) -> str:
     tally = make_tally(chart_date)
     assert tally, f"no chart date for {chart_date}"
     chart = load_chart(chart_date)
@@ -41,7 +41,7 @@ def new_chart(chart_date: Union[str, None] = None):
 
 @web_routes.route("/report/")
 @web_routes.route("/report/<chart_date>")
-def get_chart_delta(chart_date: Union[str, None] = None):
+def get_chart_delta(chart_date: Union[str, None] = None) -> str:
     if not chart_date:
         chart_date = get_date()
     yesterday_date = get_date(chart_date, 1)
@@ -57,4 +57,3 @@ def get_chart_delta(chart_date: Union[str, None] = None):
         added_to_chart=added_to_chart,
         removed_from_chart=removed_from_chart
     )
-

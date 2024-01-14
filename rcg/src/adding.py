@@ -1,5 +1,5 @@
 """Code for adding charts to the database."""
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List
 
 from .dates import verify_date
 from .db import db_query
@@ -68,11 +68,11 @@ def get_group_artists(artists: List[Artist]) -> List[Artist]:
             WHERE group_spotify_id='{a.spotify_id}'
             ''')
         if group_artists:
-            new_artists.append([create_artist(a[0], a[1]) for a in group_artists])
+            new_artists += ([create_artist(a[0], a[1]) for a in group_artists])
     return new_artists
 
 
-def add_chart_to_db(chart: Chart):
+def add_chart_to_db(chart: Chart) -> None:
     # verify chart does not already exist
     verification = db_query(f"SELECT count(*) FROM chart WHERE chart_date='{chart.chart_date}'")[0][0]
     assert verification == 0, f"Chart at date {chart.chart_date} already contains {str(verification)} items."
@@ -88,8 +88,9 @@ def add_chart_to_db(chart: Chart):
 
 def verify_data(
         chart: Chart,
-        data_type: Literal['artists', 'appearances']
-):
+        data_type: str
+) -> None:
+    assert data_type in ['artists', 'appearances']
     missing = globals()[f"find_missing_{data_type}"](chart)
     if missing:
         globals()[f'add_multiple_{data_type}'](missing)
@@ -177,7 +178,7 @@ def find_missing_appearances(chart: Chart) -> List[Appearance]:
     ]
 
 
-def make_appearance_query(appearance: Appearance):
+def make_appearance_query(appearance: Appearance) -> str:
     """
     INPUT:
         appearance (Appearance)
