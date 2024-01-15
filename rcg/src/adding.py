@@ -1,7 +1,6 @@
 """Code for adding charts to the database."""
 from typing import Any, Dict, List
 
-from .dates import verify_date
 from .db import db_query
 from .gender import lookup_gender
 from .track import (Appearance, Artist, Chart, Track, create_artist)
@@ -29,7 +28,6 @@ def parse_spotify_track(track: Dict[Any, Any]) -> Track:
     )
 
 
-@verify_date
 def parse_spotify_chart(chart_date: str, raw_chart: Dict[Any, Any]) -> Chart:
     """
     Converts a spotify chart (dict) into a Chart.

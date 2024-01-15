@@ -23,8 +23,8 @@
                 {% for g in ['Male', 'Female', 'Non-Binary'] %}
                 <h4 class="site-title">
                     <span class="{{ g }}">
-                        {{ g }}: </span>{{ count_data.get(g)['Total'] }} Credits
-                    ({{ count_data.get(g)['Normalized'] }}%)</h4>
+                        {{ g }}: </span>{{ count_data.get(g[0].lower())['Total'] }} Credits
+                    ({{ count_data.get(g[0].lower())['Normalized'] }}%)</h4>
                 {% endfor %}
             </div>
 

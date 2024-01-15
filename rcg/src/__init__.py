@@ -5,13 +5,13 @@ from typing import Any, Dict, List, Tuple
 import spotipy
 
 from .adding import parse_spotify_chart, parse_spotify_track
-from .dates import verify_date
 from .db import db_query
 from .track import Appearance, Chart, Track, make_track_from_appearances
+from .dates import verify_date
 
 
-@verify_date
 def make_tally(chart_date: str) -> List[List[Tuple[Any]]]:
+    verify_date(chart_date)
     q = """
     SELECT
     artist.artist_name,
@@ -37,11 +37,11 @@ def make_tally(chart_date: str) -> List[List[Tuple[Any]]]:
     return tally_formatted
 
 
-@verify_date
 def load_chart(chart_date: str) -> Chart:
     """
     Loads a chart from the db and parses it into a Chart object.
     """
+    verify_date(chart_date)
     q = """
     SELECT
         chart.song_spotify_id,
@@ -63,8 +63,8 @@ def load_chart(chart_date: str) -> Chart:
     return Chart(chart_date, chart_tracks)
 
 
-@verify_date
 def format_count_data(chart_date: str) -> Dict[str, Dict[str, float]]:
+    verify_date(chart_date)
     q = """
         SELECT
             gender,
@@ -83,7 +83,7 @@ def format_count_data(chart_date: str) -> Dict[str, Dict[str, float]]:
             'Normalized': round(
                 float(
                     next(d for d in count_data if d[0] == g.lower()[0])[2]
-                ), 3)
+                ), 1)
         } for g in ['Male', 'Female', 'Non-Binary']
     }
     return count_dict

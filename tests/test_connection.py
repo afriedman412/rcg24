@@ -12,6 +12,10 @@ class TestFolio(TestCase):
         response = self.client.get("/")
         self.assert200(response)
 
+    def test_default_date(self):
+        response = self.client.get("/")
+        self.assertIn(b'2023-01-01', response.data)
+
 
 def test_sql():
     q = """

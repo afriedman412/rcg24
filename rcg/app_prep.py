@@ -6,6 +6,7 @@ with warnings.catch_warnings():
     import connexion
 from flask import Flask
 from dotenv import find_dotenv, load_dotenv
+from .src.dates import get_date
 
 
 def init_app() -> Flask:
@@ -19,7 +20,8 @@ def init_app() -> Flask:
     dir_ = os.path.abspath(os.path.dirname(__file__))
     connex_app = connexion.App(__name__, specification_dir=dir_)
     app = connex_app.app
-    app.config.from_pyfile('config/config.py')
+    os.environ['TODAY'] = get_date()
+    os.environ['LATEST_CHART_DATE'] = get_date(default_is_today=False)
     return app
 
 

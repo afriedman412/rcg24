@@ -7,30 +7,32 @@ from pytz import timezone
 
 from .db import db_query
 
-date_str = "%Y-%m-%d"
+DATE_FORMAT = "%Y-%m-%d"
 
 
-def get_date(date: Union[str, dt, None] = None, offset: int = 0) -> str:
+def get_date(
+        date: Union[str, dt, None] = None, 
+        offset: int = 0,
+        default_is_today: bool = True
+    ) -> str:
     """
     If no date is provided, date is today for the Eastern time zone.
 
     If offset, returns offset days ago. (offset=1 is yesterday)
     """
     if not date:
-        date = dt.now()
+        if default_is_today:
+            date = dt.now()
+        else:
+            date = get_most_recent_chart_date()
     elif isinstance(date, str):
-        assert re.match(r"\d{4}-\d{2}-\d{2}", date), f"chart_date ({date}) format is not YYYY-MM-DD"
-        date = dt.strptime(date, date_str)
-    date = timezone('US/Eastern').localize(date)
+        date = dt.strptime(date, DATE_FORMAT)
+    if date.tzinfo is None:
+        date = timezone('US/Eastern').localize(date)
     if offset:
         date = date - timedelta(offset)
-    date = date.strftime(date_str)
+    date = date.strftime(DATE_FORMAT)
     return date
-
-
-def revert_to_most_recent_chart_date(chart_date: str) -> str:
-    most_recent_chart_date = get_most_recent_chart_date().strftime(date_str)
-    return most_recent_chart_date if most_recent_chart_date > chart_date else chart_date
 
 
 def get_most_recent_chart_date() -> dt:
@@ -38,19 +40,33 @@ def get_most_recent_chart_date() -> dt:
     Gets the most recent chart date.
     """
     most_recent_chart_date = db_query("select max(chart_date) from chart")[0][0]
-    assert re.match(
-        r"\d{4}-\d{2}-\d{2}", most_recent_chart_date
-    ), "chart_date format must be YYYY-MM-DD"
-    return timezone('US/Eastern').localize(dt.strptime(most_recent_chart_date, date_str))
+    return timezone('US/Eastern').localize(dt.strptime(most_recent_chart_date, DATE_FORMAT))
 
 
-def verify_date(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
+def verify_date(chart_date: str):
     """
-    To be used as a decorator for functions that need a chart date.
+    Assures correct date formatting, prevents SQL injections.
     """
-    def wrapper(chart_date: Union[str, None] = None, *args, **kwargs) -> Callable[[Any], Any]:
-        if not chart_date:
-            chart_date = get_date()
-        assert re.match(r"\d{4}-\d{2}-\d{2}", chart_date), "chart_date format must be YYYY-MM-DD"
-        return func(chart_date, *args, **kwargs)
-    return wrapper
+    assert re.match(r"\d{4}-\d{2}-\d{2}", chart_date), f"chart_date ({chart_date}) format is not YYYY-MM-DD"
+
+
+# def preload_today(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
+#     """
+#     To be used as a decorator for functions that needs a chart_date defaulting to today.
+#     """
+#     def preload_today_wrapper(chart_date: Union[str, None] = None, *args, **kwargs) -> Callable[[Any], Any]:
+#         chart_date = get_date(chart_date)
+#         verify_date(chart_date)
+#         return func(chart_date, *args, **kwargs)
+#     return preload_today_wrapper
+
+
+# def preload_latest_chart_date(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
+#     """
+#     To be used as a decorator for functions that needs a chart_date defaulting to most recent date in data.
+#     """
+#     def preload_latest_wrapper(chart_date: Union[str, None] = None, *args, **kwargs) -> Callable[[Any], Any]:
+#         chart_date = get_date(chart_date, default_is_today=False)
+#         verify_date(chart_date)
+#         return func(chart_date, *args, **kwargs)
+#     return preload_latest_wrapper

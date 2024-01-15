@@ -1,10 +1,9 @@
 import os
 from typing import Union, Any
-import re
 from flask import Blueprint, jsonify, render_template
 
 from ..src import format_count_data, load_chart, make_tally, load_spotify_chart
-from ..src.dates import get_date, verify_date, revert_to_most_recent_chart_date
+from ..src.dates import verify_date, get_date
 from ..src.adding import add_chart_to_db
 from datetime import datetime as dt
 
@@ -13,7 +12,9 @@ web_routes = Blueprint("web_routes", __name__)
 
 @web_routes.route("/testo")
 def testo():
-    return " • ".join(["divorth???", os.getenv("LOCAL", "xxx"), os.getenv("MYSQL_DB", "YYY")])
+    return " • ".join([
+        os.getenv(v, v) for v in ['DIVORTH??', 'LOCAL', 'MYSQL_DB', 'TODAY', 'LATEST_CHART_DATE']
+        ])
 
 
 @web_routes.route("/update/XXYYXX", methods=["GET"])
@@ -25,9 +26,10 @@ def update() -> dict[Any, Any]:
 
 @web_routes.route("/")
 @web_routes.route("/<chart_date>")
-@verify_date
-def new_chart(chart_date: Union[str, None] = None) -> str:
-    chart_date = revert_to_most_recent_chart_date()
+def make_latest_chart(chart_date: Union[str, None] = None) -> str:
+    if chart_date is None:
+        chart_date = os.environ["LATEST_CHART_DATE"]
+    verify_date(chart_date)
     tally = make_tally(chart_date)
     assert tally, f"no chart date for {chart_date}"
     chart = load_chart(chart_date)
@@ -44,9 +46,9 @@ def new_chart(chart_date: Union[str, None] = None) -> str:
 @web_routes.route("/report")
 @web_routes.route("/report/<chart_date>")
 def get_chart_delta(chart_date: Union[str, None] = None) -> str:
-    if not chart_date:
-        chart_date = get_date()
-        chart_date = revert_to_most_recent_chart_date()
+    if chart_date is None:
+        chart_date = os.getenv("LATEST_CHART_DATE")
+    verify_date(chart_date)
     yesterday_date = get_date(chart_date, 1)
     today_chart, yesterday_chart = (load_chart(d) for d in [chart_date, yesterday_date])
     assert yesterday_chart.tracks, f"no chart for {yesterday_date}"

@@ -1,4 +1,5 @@
 import re
+import os
 from typing import Dict, Union
 from flask import Flask
 from dash import Dash, html, page_container
@@ -7,7 +8,7 @@ from dash.dependencies import Input, Output
 from plotly.graph_objects import Bar, Figure
 
 from rcg.src import format_count_data
-from rcg.src.dates import get_date, revert_to_most_recent_chart_date
+from rcg.src.dates import verify_date
 
 from ..config.config import COLORS
 
@@ -40,16 +41,22 @@ def init_callbacks(dash_app):
         Output("holder-holder", 'children'),
         Input("url", "search")
     )
-    def reload_graphs(chart_date):
+
+    def reload_graphs(chart_date: Union[str, None]):
+        if chart_date is None:
+            chart_date = os.getenv("LATEST_CHART_DATE", "BAD DATE")
         chart_date = re.sub(r"^\?", "", chart_date)
-        print(chart_date)
+        try:
+            verify_date(chart_date)
+        except AssertionError:
+            chart_date = os.getenv("LATEST_CHART_DATE", "BAD DATE")
         return bar_grapher_generator(chart_date)
 
 
 def bar_grapher_generator(chart_date: Union[str, None] = None):
-    chart_date = revert_to_most_recent_chart_date(get_date(chart_date))
-    count_data = format_count_data(chart_date)
     # transposing the count_data was easier than rewriting the code for getting count_data
+    
+    count_data = format_count_data(chart_date)
     count_data = {
         i: {g: count_data[g][i] for g in count_data.keys()}
         for i in ['Total', 'Normalized']
