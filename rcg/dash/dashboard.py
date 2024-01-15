@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 from plotly.graph_objects import Bar, Figure
 
 from rcg.src import format_count_data
-from rcg.src.dates import get_date
+from rcg.src.dates import get_date, revert_to_most_recent_chart_date
 
 from ..config.config import COLORS
 
@@ -47,7 +47,7 @@ def init_callbacks(dash_app):
 
 
 def bar_grapher_generator(chart_date: Union[str, None] = None):
-    chart_date = get_date(chart_date)
+    chart_date = revert_to_most_recent_chart_date(get_date(chart_date))
     count_data = format_count_data(chart_date)
     # transposing the count_data was easier than rewriting the code for getting count_data
     count_data = {

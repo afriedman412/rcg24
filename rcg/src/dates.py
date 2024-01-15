@@ -7,6 +7,8 @@ from pytz import timezone
 
 from .db import db_query
 
+date_str = "%Y-%m-%d"
+
 
 def get_date(date: Union[str, dt, None] = None, offset: int = 0) -> str:
     """
@@ -18,15 +20,17 @@ def get_date(date: Union[str, dt, None] = None, offset: int = 0) -> str:
         date = dt.now()
     elif isinstance(date, str):
         assert re.match(r"\d{4}-\d{2}-\d{2}", date), f"chart_date ({date}) format is not YYYY-MM-DD"
-        date = dt.strptime(date, "%Y-%m-%d")
+        date = dt.strptime(date, date_str)
     date = timezone('US/Eastern').localize(date)
-    most_recent_chart_date = get_most_recent_chart_date()
-    if date > most_recent_chart_date:
-        date = most_recent_chart_date
     if offset:
         date = date - timedelta(offset)
-    date = date.strftime("%Y-%m-%d")
+    date = date.strftime(date_str)
     return date
+
+
+def revert_to_most_recent_chart_date(chart_date: str) -> str:
+    most_recent_chart_date = get_most_recent_chart_date().strftime(date_str)
+    return most_recent_chart_date if most_recent_chart_date > chart_date else chart_date
 
 
 def get_most_recent_chart_date() -> dt:
@@ -37,7 +41,7 @@ def get_most_recent_chart_date() -> dt:
     assert re.match(
         r"\d{4}-\d{2}-\d{2}", most_recent_chart_date
     ), "chart_date format must be YYYY-MM-DD"
-    return timezone('US/Eastern').localize(dt.strptime(most_recent_chart_date, "%Y-%m-%d"))
+    return timezone('US/Eastern').localize(dt.strptime(most_recent_chart_date, date_str))
 
 
 def verify_date(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
