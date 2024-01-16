@@ -4,8 +4,10 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=DeprecationWarning)
     import connexion
-from flask import Flask
+
 from dotenv import find_dotenv, load_dotenv
+from flask import Flask
+
 from .src.dates import get_date
 
 

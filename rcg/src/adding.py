@@ -1,9 +1,11 @@
 """Code for adding charts to the database."""
+import os
 from typing import Any, Dict, List
 
+from .dates import get_most_recent_chart_date, DATE_FORMAT
 from .db import db_query
 from .gender import lookup_gender
-from .track import (Appearance, Artist, Chart, Track, create_artist)
+from .track import Appearance, Artist, Chart, Track, create_artist
 
 
 # for reading from spotipy
@@ -83,6 +85,8 @@ def add_chart_to_db(chart: Chart) -> None:
 
     verify = db_query(f"SELECT count(*) FROM chart WHERE chart_date='{chart.chart_date}'")[0][0]
     assert verify == len(chart.tracks), str(verify)
+    new_chart_date = get_most_recent_chart_date().strftime(DATE_FORMAT)
+    os.environ['LATEST_CHART_DATE'] = new_chart_date
     return
 
 

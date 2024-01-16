@@ -1,5 +1,7 @@
-from flask_testing import TestCase
 import os
+
+from flask_testing import TestCase
+
 from app import app
 from rcg.src.db import db_query
 
@@ -17,7 +19,7 @@ class TestFolio(TestCase):
         self.assertIn(b'2023-01-01', response.data)
 
     def test_report(self):
-        response =self.client.get("/report")
+        response = self.client.get("/report")
         self.assertIn(b'Chart date 1: 2023-01-01', response.data)
 
 

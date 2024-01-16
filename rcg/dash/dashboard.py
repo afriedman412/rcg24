@@ -1,10 +1,11 @@
-import re
 import os
+import re
 from typing import Dict, Union
-from flask import Flask
+
 from dash import Dash, html, page_container
 from dash.dcc import Graph, Location
 from dash.dependencies import Input, Output
+from flask import Flask
 from plotly.graph_objects import Bar, Figure
 
 from rcg.src import format_count_data

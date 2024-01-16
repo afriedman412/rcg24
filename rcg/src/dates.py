@@ -1,7 +1,7 @@
 import re
 from datetime import datetime as dt
 from datetime import timedelta
-from typing import Callable, Union, Any
+from typing import Any, Callable, Union
 
 from pytz import timezone
 
@@ -11,10 +11,10 @@ DATE_FORMAT = "%Y-%m-%d"
 
 
 def get_date(
-        date: Union[str, dt, None] = None, 
-        offset: int = 0,
-        default_is_today: bool = True
-    ) -> str:
+    date: Union[str, dt, None] = None,
+    offset: int = 0,
+    default_is_today: bool = True
+) -> str:
     """
     If no date is provided, date is today for the Eastern time zone.
 

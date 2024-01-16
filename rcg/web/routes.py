@@ -1,11 +1,12 @@
 import os
-from typing import Union, Any
+from datetime import datetime as dt
+from typing import Any, Union
+
 from flask import Blueprint, jsonify, render_template
 
-from ..src import format_count_data, load_chart, make_tally, load_spotify_chart
-from ..src.dates import verify_date, get_date
+from ..src import format_count_data, load_chart, load_spotify_chart, make_tally
 from ..src.adding import add_chart_to_db
-from datetime import datetime as dt
+from ..src.dates import get_date, verify_date
 
 web_routes = Blueprint("web_routes", __name__)
 

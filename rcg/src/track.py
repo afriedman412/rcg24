@@ -1,5 +1,6 @@
 from collections import namedtuple
-from typing import List, Union, Any, Dict, Iterable
+from typing import Any, Dict, Iterable, List, Union
+
 from .dates import verify_date
 
 Artist: tuple[str] = namedtuple(

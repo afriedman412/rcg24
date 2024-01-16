@@ -5,9 +5,9 @@ from typing import Any, Dict, List, Tuple
 import spotipy
 
 from .adding import parse_spotify_chart, parse_spotify_track
+from .dates import verify_date
 from .db import db_query
 from .track import Appearance, Chart, Track, make_track_from_appearances
-from .dates import verify_date
 
 
 def make_tally(chart_date: str) -> List[List[Tuple[Any]]]:
