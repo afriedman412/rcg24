@@ -105,6 +105,8 @@ def load_spotify_chart(chart_id: str = 'spotify:playlist:37i9dQZF1DX0XUsuxWHRQd'
     """
     Loads playlist from Spotify at the proivded chart_id. Defaut is for Rap Caviar.
 
+    Automatically uses TODAY for date because charts are updated daily.
+
     INPUTS:
         chart_id (str)
 
@@ -113,7 +115,7 @@ def load_spotify_chart(chart_id: str = 'spotify:playlist:37i9dQZF1DX0XUsuxWHRQd'
     """
     sp = load_spotipy()
     rc = sp.playlist(chart_id)
-    chart = parse_spotify_chart(None, rc)
+    chart = parse_spotify_chart(os.getenv("TODAY"), rc)
     return chart
 
 

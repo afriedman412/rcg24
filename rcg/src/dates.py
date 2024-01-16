@@ -40,6 +40,7 @@ def get_most_recent_chart_date() -> dt:
     Gets the most recent chart date.
     """
     most_recent_chart_date = db_query("select max(chart_date) from chart")[0][0]
+    verify_date(most_recent_chart_date)
     return timezone('US/Eastern').localize(dt.strptime(most_recent_chart_date, DATE_FORMAT))
 
 
@@ -47,6 +48,7 @@ def verify_date(chart_date: str):
     """
     Assures correct date formatting, prevents SQL injections.
     """
+    assert chart_date is not None, "No date provided (or date is None)"
     assert re.match(r"\d{4}-\d{2}-\d{2}", chart_date), f"chart_date ({chart_date}) format is not YYYY-MM-DD"
 
 

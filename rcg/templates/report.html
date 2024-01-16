@@ -7,7 +7,11 @@
     <body>
         <div class="wrapper">
             <h1 class="site-title s-green">
+                {% if updated %}
+                Chart Updated!!!
+                {% else %}
                 Chart Report
+                {% endif %}
             </h1>
             <h2 class="site-title">Chart date 1: {{ new_chart_date }}</h2>
             <h2 class="site-title">Chart date 2: {{ old_chart_date }}</h2>

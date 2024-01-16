@@ -73,9 +73,11 @@ def get_group_artists(artists: List[Artist]) -> List[Artist]:
 def add_chart_to_db(chart: Chart) -> None:
     # verify chart does not already exist
     verification = db_query(f"SELECT count(*) FROM chart WHERE chart_date='{chart.chart_date}'")[0][0]
-    assert verification == 0, f"Chart at date {chart.chart_date} already contains {str(verification)} items."
-    charting_query = chart.make_charting_query()
-    db_query(charting_query, commit=True)
+    if verification == 0:
+        charting_query = chart.make_charting_query()
+        db_query(charting_query, commit=True)
+    else:
+        print(f"Chart at date {chart.chart_date} already contains {str(verification)} items, not updating charts.")
     for data_type in ['artists', 'appearances']:
         verify_data(chart, data_type)
 
@@ -191,7 +193,7 @@ def make_appearance_query(appearance: Appearance) -> str:
             [
                 "song_spotify_id",
                 "song_name",
-                "artist_spotfy_id",
+                "artist_spotify_id",
                 "artist_name",
                 "primary"
             ]) + ")"
@@ -213,7 +215,7 @@ def add_multiple_appearances(appearances: List[Appearance]) -> None:
                 song_name,
                 artist_spotify_id,
                 artist_name,
-                primary
+                `primary`
             )
         VALUES """
     appearance_queries = ",\n\t".join([make_appearance_query(a) for a in appearances])

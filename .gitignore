@@ -13,6 +13,7 @@ req.sh
 rcg_old
 scrap_setup.py
 lint.txt
+sql.txt
 
 *-key.json
 *.log

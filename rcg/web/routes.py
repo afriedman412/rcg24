@@ -21,7 +21,7 @@ def testo():
 def update() -> dict[Any, Any]:
     new_chart = load_spotify_chart()
     add_chart_to_db(new_chart)
-    return jsonify({"Chart added to db"}, 200)
+    return get_chart_delta(new_chart.chart_date, True)
 
 
 @web_routes.route("/")
@@ -45,20 +45,25 @@ def make_latest_chart(chart_date: Union[str, None] = None) -> str:
 
 @web_routes.route("/report")
 @web_routes.route("/report/<chart_date>")
-def get_chart_delta(chart_date: Union[str, None] = None) -> str:
+def get_chart_delta(chart_date: Union[str, None] = None, updated: bool = False) -> str:
     if chart_date is None:
         chart_date = os.getenv("LATEST_CHART_DATE")
     verify_date(chart_date)
     yesterday_date = get_date(chart_date, 1)
     today_chart, yesterday_chart = (load_chart(d) for d in [chart_date, yesterday_date])
-    assert yesterday_chart.tracks, f"no chart for {yesterday_date}"
+    if yesterday_chart.tracks:
+        added_to_chart = today_chart.tracks - yesterday_chart.tracks
+        removed_from_chart = yesterday_chart.tracks - today_chart.tracks
 
-    added_to_chart = today_chart.tracks - yesterday_chart.tracks
-    removed_from_chart = yesterday_chart.tracks - today_chart.tracks
+    else:
+        yesterday_date += " **NO CHART IN DB**"
+        added_to_chart = None
+        removed_from_chart = None
     return render_template(
         "report.html",
         new_chart_date=chart_date,
         old_chart_date=yesterday_date,
         added_to_chart=added_to_chart,
-        removed_from_chart=removed_from_chart
+        removed_from_chart=removed_from_chart,
+        updated=updated
     )

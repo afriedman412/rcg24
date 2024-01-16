@@ -55,6 +55,12 @@ def db_query(
     commit: bool = False,
     close: bool = True
 ) -> Any:
+    if os.getenv("SQL_DEBUG"):
+        try:
+            with open("sql.txt", "a+") as f:
+                f.write("\n---\n" + q + "\n***\n")
+        except:
+            pass
     if not conn:
         conn = make_sql_connection()
     with conn.cursor() as cur:

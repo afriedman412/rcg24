@@ -1,5 +1,6 @@
 from collections import namedtuple
 from typing import List, Union, Any, Dict, Iterable
+from .dates import verify_date
 
 Artist: tuple[str] = namedtuple(
     "Artist", [
@@ -95,6 +96,7 @@ class Chart:
             chart_date: str,
             tracks: List[Track]
     ):
+        verify_date(chart_date)
         self.chart_date = chart_date
         self.tracks = set(tracks)
         return
