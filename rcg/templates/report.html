@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css"
+            href="{{ url_for('static',filename='styles/stylesheet.css') }}">
+
+    </head>
+    <body>
+        <div class="wrapper">
+            <h1 class="site-title s-green">
+                {% if updated %}
+                Chart Updated!!!
+                {% else %}
+                Chart Report
+                {% endif %}
+            </h1>
+            <h2 class="site-title">Chart date 1: {{ new_chart_date }}</h2>
+            <h2 class="site-title">Chart date 2: {{ old_chart_date }}</h2>
+
+            {% if added_to_chart %}
+            <h2 class="chart-title"><a id="FullChart"></a><a
+                    href="#Top">Added</a></h2>
+            {% for c in ['Song', 'Primary Artist', 'Features'] %}
+            <h4 class="col-head">{{c}}</h4>
+            {% endfor %}
+
+            {% for track in added_to_chart %}
+            {% set class="even" if loop.index % 2 == 0 else "odd" %}
+            {% for i in ['song_name', 'primary_artist_name', 'features'] %}
+                <div class="grid-item {{class}} g{{loop.index}}">
+                    <span class="tally-artist">{{ track[i] }}</span>
+                </div>
+            {% endfor %}
+            {% endfor %}
+            {% else %}
+            <h2 class="chart-title">No diff</h2>
+            {% endif %}
+
+            {% if removed_from_chart %}
+            <h2 class="chart-title"><a id="FullChart"></a><a
+                    href="#Top">Removed</a></h2>
+            {% for c in ['Song', 'Primary Artist', 'Features'] %}
+            <h4 class="col-head">{{c}}</h4>
+            {% endfor %}
+
+            {% for track in removed_from_chart %}
+            {% set class="even" if loop.index % 2 == 0 else "odd" %}
+            {% for i in ['song_name', 'primary_artist_name', 'features'] %}
+                <div class="grid-item {{class}} g{{loop.index}}">
+                    <span class="tally-artist">{{ track[i] }}</span>
+                </div>
+            {% endfor %}
+            {% endfor %}
+            {% else %}
+            <h2 class="chart-title">No diff</h2>
+            {% endif %}
+
+        </div>
+    </body>
+</html>

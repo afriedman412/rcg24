@@ -1,0 +1,132 @@
+body {
+    background-color: black;
+    color: whitesmoke;
+    text-decoration: solid;
+    font-size: 1.5em;
+    font-weight: 400;
+    font-family: "Open Sans", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  
+  a {
+    color:inherit;
+  }
+
+  ul {
+    grid-column: -1/1;
+  }
+
+  li {
+    margin: 0 1vw 0vh 1vw;
+  }
+  
+  iframe{
+    grid-column: 1 / -1;
+    float: left;
+    border: none;
+  }
+
+  .s-green {
+    color: #1fd362;
+  }
+  
+  .site-title {
+    grid-column: 1/-1;
+    margin: 0vh;
+  }
+  
+  .male {
+    color: #a1c3d1
+  }
+  
+  .female {
+    color: #f09933
+  }
+  
+  .non-binary {
+    color: #816f88
+  }
+  
+  .spacer {
+    grid-column: 1 / -1;
+    margin-bottom: 5vh;
+    float: left;
+  }
+  
+  .wrapper {
+    display: grid;
+    max-width: 960px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 1%;
+    margin: 5vh auto 2vh;
+  }
+  
+  .bar-chart-container {
+    grid-column: 1 / -1;
+    margin: 0 auto;
+  } 
+  
+  .bar-chart {
+    width: 44%;
+    margin: 0 1.5vw;
+  }
+  
+  .l {
+    float: left;
+  }
+  
+  .r {
+    float: right;
+  }
+  
+  .chart-title {
+    grid-column: 1 / -1;
+    text-align: center;
+    text-decoration: underline;
+    color: white;
+    width: 100%;
+    margin: 4vh auto 1vh;
+  }
+  
+  .col-head {
+    text-align: center;
+    margin: 2vh auto;
+    float: left;
+  }
+  
+  .grid-item {
+    font-size: 50%;
+    font-weight: bold;
+    padding: 0.5vh 1vw;
+  }
+
+  .g1 {
+    grid-column: 1 / 1;
+  }
+
+  .g2 {
+    grid-column: 2 / 2;
+  } 
+
+  .g3 {
+    grid-column: 3 / 3;
+  }
+  
+  .even {
+    background-color: dimgray;
+  }
+  
+  .odd {
+    background-color: gray;
+  }
+  
+  .tally-artist {
+    float: left;
+  }
+  
+  .tally-count {
+    float: right;
+  }
+
+  .faq {
+    grid-column: 1 / -1;
+  }

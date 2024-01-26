@@ -9,7 +9,11 @@ notes.md
 .DS_Store
 .env*
 req.sh
-rcg/rcg_old/*
+*/rcg_old/*
+rcg_old
+scrap_setup.py
+lint.txt
+sql.txt
 
 *-key.json
 *.log

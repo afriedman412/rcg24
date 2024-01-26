@@ -1,12 +1,12 @@
 import os
 from collections import Counter
-from typing import Tuple
+from typing import Any, Tuple
 
 import pylast
 import wikipedia
 
 
-def lookup_gender(artist_name: str) -> Tuple[str]:
+def lookup_gender(artist_name: str) -> Tuple[str, str, str]:
     """
     Gets the gender from last.fm and wikipedia, then determines the "official" gender.
 
@@ -18,7 +18,7 @@ def lookup_gender(artist_name: str) -> Tuple[str]:
     return lfm_gender, wikipedia_gender, gender
 
 
-def access_lfm():
+def access_lfm() -> Any:
     """
     Instantiates a lastfm network object w credentials.
     """
@@ -37,12 +37,11 @@ def get_lastfm_gender(artist: str) -> str:
     lastfm_network = access_lfm()
     try:
         bio = pylast.Artist(artist, lastfm_network).get_bio_content(language="en")
-        if (not bio) or (bio.startswith('<a href="https://www.last.fm/music/')):
-            return "x"  # no last fm bio
-        else:
-            return gender_count(bio)
     except pylast.WSError:
         return "l"  # artist not found in last fm
+    if (not bio) or (bio.startswith('<a href="https://www.last.fm/music/')):
+        return "x"  # no last fm bio
+    return gender_count(bio)
 
 
 def get_wikipedia_gender(artist: str) -> str:
@@ -51,7 +50,6 @@ def get_wikipedia_gender(artist: str) -> str:
     """
     try:
         bio = wikipedia.page(artist, auto_suggest=False, redirect=True).content
-        return gender_count(bio)
     except wikipedia.DisambiguationError as e:
         try:
             artist_ = next(o for o in e.options if 'rapper' in o)
@@ -60,26 +58,28 @@ def get_wikipedia_gender(artist: str) -> str:
             return "d"  # disambiguation error
     except wikipedia.PageError:
         return "p"  # page error
+    return gender_count(bio)
 
 
-def gender_count(bio: str, return_counts: bool = False):
+def gender_count(bio: str) -> str:
     """
     Guesses gender based on pronouns in bio.
     """
-    bio = Counter(bio.lower().split())
+    pronoun_count = Counter(bio.lower().split())
     data = [
         ('m', ['he', 'him', 'his']),
         ('f', ['she', 'her', 'hers']),
         ('n', ['they', 'them', 'theirs'])
     ]
-    counts = {d[0]: sum([bio[p] for p in d[1]]) for d in data}
-    if return_counts:
-        return counts
-    else:
-        return max(counts, key=counts.get)
+    counts = {
+        d[0]: sum(
+            [pronoun_count[p] for p in d[1]]
+        ) for d in data
+    }
+    return max(counts, key=counts.get)
 
 
-def parse_genders(last_fm_gender, wikipedia_gender) -> str:
+def parse_genders(last_fm_gender: str, wikipedia_gender: str) -> str:
     """
     Logic to decide which gender to return (m, f, n, or x)
 

@@ -1,179 +1,159 @@
-from ..db import db_query
-from .gender import lookup_gender
-from sqlalchemy.engine.cursor import CursorResult
 from collections import namedtuple
-from typing import Union, List, Tuple
+from typing import Any, Dict, Iterable, List, Union
+
+from .dates import verify_date
 
 Artist: tuple[str] = namedtuple(
     "Artist", [
         "name",
         "spotify_id",
+        "primary"
     ]
 )
 
-Track: tuple[str, str, Tuple[Artist], str, str] = namedtuple(
-    "Track", [
-        "song_name",
+Appearance: tuple[str, str, str, str, bool] = namedtuple(
+    "Appearance", [
         "song_spotify_id",
-        "artists",
-        "primary_artist_name",
-        "primary_artist_spotify_id"
-        ]
+        "song_name",
+        "artist_spotify_id",
+        "artist_name",
+        "primary"
+    ]
 )
 
 
-def parse_chart(chart: CursorResult) -> List[Track]:
+class Track:
     """
-    Turns a chart queried from the db into a list of Tracks.
-    """
-    return [Track._make(t[2:]) for t in chart]
-
-
-def parse_track(track: dict) -> Track:
-    """
-    Input:
-        track (dict) - spotify track from chart
-
-    Output:
-        track_output (Track) - input track parsed into Track namedtuple
-    """
-    artists = tuple(Artist._make([a['name'], a['id']]) for a in track['artists'])
-    artists = get_group_artists(artists)
-    track_output = Track._make(
-        [
-            track['name'],
-            track['id'],
-            artists,
-            artists[0].name,
-            artists[0].spotify_id
-        ]
-    )
-    return track_output
-
-
-def get_group_artists(artists: list[Artist]) -> list[Artist]:
-    """
-    If artists is a group, get group artists.
-
-    INPUT:
-        artists (list) - list of artists from a Track
-
-    OUTPUT:
-        artists (list) - same list of artists with any group members added
-    """
-    for a in artists:
-        group_artists = db_query(
-            f'SELECT artist_name,artist_spotify_id from group_table where group_spotify_id="{a.spotify_id}"')
-        if group_artists:
-            artists += [Artist._make(a) for a in group_artists]
-    return artists
-
-
-def chart_song_check(
-        song_spotify_id: str,
-        primary_artist_spotify_id: str,
-        chart_date: str
-) -> Union[tuple, None]:
-    """
-    Is the song song_spotify_id by artist_spotify_id already in the current chart?
-
-    INPUT:
+    INPUTS:
+        song_name (str)
         song_spotify_id (str)
-        primary_artist_spotify_id (str)
-        chart_date (str)
-
-    OUTPUT:
-        query result, if it exists
+        artists (Tuple[Artist])
+        primary_artist (Artist): if no primary artist is provided, uses the first artist where .primary is True
     """
-    return db_query(
-        f"""
-            SELECT * FROM chart
-            WHERE song_spotify_id="{song_spotify_id}"
-            AND primary_artist_spotify_id="{primary_artist_spotify_id}"
-            AND chart_date="{chart_date}";
-            """
-    )
 
+    def __init__(
+            self,
+            song_name: str,
+            song_spotify_id: str,
+            artists: List[Artist],
+            primary_artist: Union[Artist, None] = None
+    ):
+        self.song_name = song_name
+        self.song_spotify_id = song_spotify_id
+        self.artists = artists
+        if not primary_artist:
+            try:
+                primary_artist = next(a for a in artists if a.primary in ['T', 't', 'True', True])
+            except StopIteration:
+                raise StopIteration(f"no primary artists for {song_name}, (artists found: {artists})")
+        self.primary_artist_name = primary_artist.name
+        self.primary_artist_id = primary_artist.spotify_id
+        assert self.primary_artist_name is not None, \
+            f"bad formatting for primary artist, {song_name}, (artists found: {artists})"
+        return
 
-def artist_check(artist_spotify_id: str) -> Union[tuple, None]:
-    """
-    Is artist_spotify_id in the db?
-    """
-    return db_query(
-        f'SELECT * from artist where spotify_id="{artist_spotify_id}"'
-        )
+    def __hash__(self) -> int:
+        return hash(self.song_spotify_id + self.primary_artist_id)
 
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Track) and self.song_spotify_id == other.song_spotify_id
 
-def add_artist(artist_name: str, artist_spotify_id: str) -> None:
-    """
-    INPUTS:
-        artist_name (str)
-        artist_spotify_id (str)
-    """
-    print(f"adding {artist_name} to artists")
-    lfm_gender, wikipedia_gender, gender = lookup_gender(artist_name)
-    q = """
-        INSERT INTO
-        artist (spotify_id, artist_name, last_fm_gender,
-        wikipedia_gender, gender)
-        VALUES (""" + ", ".join(
-        f'"{p}"' for p in
-        [artist_spotify_id, artist_name, lfm_gender, wikipedia_gender, gender]) + ");"
-    db_query(q, commit=True)
-    return
+    @property
+    def features(self) -> str:
+        featured = [str(a.name) for a in self.artists if a.primary is not True]
+        if len(featured) < 1:
+            return ""
+        return ", ".join(featured)
 
+    def format_for_charting(self, chart_date: str) -> str:
+        return "(" + ", ".join(
+            f'"{p}"' for p in
+            [
+                self.song_name,
+                self.song_spotify_id,
+                self.primary_artist_name,
+                self.primary_artist_id,
+                chart_date
+            ]) + ")"
 
-def feature_check(song_spotify_id, artist_spotify_id):
-    """
-    Is artist_spotify_id's contribution to song_spotify_id in the db?
-    """
-    return db_query(
-        f"""
-        SELECT * FROM song
-        WHERE song_spotify_id="{song_spotify_id}"
-        AND artist_spotify_id="{artist_spotify_id}";
+    def appearances(self) -> list[Appearance]:
         """
+        For adding to songs table.
+
+        song_spotify_id, song_name, artist_spotify_id, artist_name, primary
+        """
+        return [
+            Appearance(self.song_spotify_id, self.song_name, a.spotify_id, a.name, a.primary) for a in self.artists
+        ]
+
+    def _todict(self) -> Dict[str, str]:
+        """For Jinja, because getattr() doesn't work in Jinja"""
+        return {k: self.__getattribute__(k) for k in ['primary_artist_name', 'song_name', 'features']}
+
+
+class Chart:
+    def __init__(
+            self,
+            chart_date: str,
+            tracks: List[Track]
+    ):
+        verify_date(chart_date)
+        self.chart_date = chart_date
+        self.tracks = set(tracks)
+        return
+
+    def __iter__(self) -> Iterable[Track]:
+        return iter(self.tracks)
+
+    def __hash__(self) -> int:
+        return hash(self.tracks)
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Chart) and self.tracks == other.tracks
+
+    def appearances(self) -> list[Appearance]:
+        return [
+            a for t in self.tracks
+            for a in t.appearances()
+        ]
+
+    def artists(self) -> set[Artist]:
+        return set([
+            a for t in self.tracks
+            for a in t.artists
+        ])
+
+    def make_charting_query(self) -> str:
+        """
+        Constructs a single query string for adding all tracks to the database.
+
+        OUTPUT:
+            q (str): mysql query string
+        """
+        q = """
+                INSERT INTO
+                chart (
+                    song_name,
+                    song_spotify_id,
+                    primary_artist_name,
+                    primary_artist_spotify_id,
+                    chart_date
+                )
+                VALUES """
+
+        q += ",\n\t".join([t.format_for_charting(self.chart_date) for t in self.tracks]) + ";"
+        return q
+
+
+def create_artist(name: str, spotify_id: str, primary: Union[str, bool] = False) -> Artist:
+    if isinstance(primary, str) and primary in ['True', 't']:
+        primary = True
+    return Artist(name, spotify_id, primary)
+
+
+def make_track_from_appearances(appearances: List[Appearance]) -> Track:
+    return Track(
+        song_name=appearances[0].song_name,
+        song_spotify_id=appearances[0].song_spotify_id,
+        artists=[Artist(a.artist_name, a.artist_spotify_id, a.primary) for a in appearances]
     )
-
-
-def add_song_feature(
-        track: Track,
-        artist_name: str,
-        artist_spotify_id: str,
-        primary: bool = False) -> None:
-    """
-    Add song feature.
-
-    INPUTS:
-        track (Track)
-        artist_name (str)
-        artist_spotify_id (str)
-        primary (bool) - is the artist the primary artist?
-    """
-    q = """
-        INSERT INTO
-        song (song_name, song_spotify_id, artist_name, artist_spotify_id, `primary`)
-        VALUES (""" + ", ".join(
-        f'"{p}"' for p in
-        [
-            track.name,
-            track.song_spotify_id,
-            artist_name,
-            artist_spotify_id,
-            primary]) + ");"
-    db_query(q)
-    return
-
-
-def add_all_songs_and_artists(track: Track) -> None:
-    """
-    Add all song features that aren't already in the db.
-    """
-    primary = True  # only first artist is primary
-    for a in track.artists:
-        if not feature_check(track.song_spotify_id, a.spotify_id):
-            add_song_feature(track, a.name, a.spotify_id, primary)
-        if not artist_check(a.name, a.spotify_id):
-            add_artist(a.name, a.spotify_id)
-        primary = False
-    return

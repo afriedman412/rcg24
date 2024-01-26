@@ -1,6 +1,9 @@
+import os
+
 from flask_testing import TestCase
+
 from app import app
-from rcg.db import db_query
+from rcg.src.db import db_query
 
 
 class TestFolio(TestCase):
@@ -10,6 +13,14 @@ class TestFolio(TestCase):
     def test_home_route(self):
         response = self.client.get("/")
         self.assert200(response)
+
+    def test_default_date(self):
+        response = self.client.get("/")
+        self.assertIn(b'2023-01-01', response.data)
+
+    def test_report(self):
+        response = self.client.get("/report")
+        self.assertIn(b'Chart date 1: 2023-01-01', response.data)
 
 
 def test_sql():
