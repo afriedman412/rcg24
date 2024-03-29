@@ -63,7 +63,7 @@ def load_chart(chart_date: str) -> Chart:
     return Chart(chart_date, chart_tracks)
 
 
-def format_count_data(chart_date: str) -> Dict[str, Dict[str, float]]:
+def get_chart_stats(chart_date: str) -> Dict[str, Dict[str, float]]:
     verify_date(chart_date)
     q = """
         SELECT
@@ -77,16 +77,28 @@ def format_count_data(chart_date: str) -> Dict[str, Dict[str, float]]:
         GROUP BY gender
         """.format(chart_date)
     count_data = db_query(q)
-    count_dict = {
-        g.lower()[0]: {
-            'Total': next(d for d in count_data if d[0] == g.lower()[0])[1],
-            'Normalized': round(
-                float(
-                    next(d for d in count_data if d[0] == g.lower()[0])[2]
-                ), 1)
-        } for g in ['Male', 'Female', 'Non-Binary']
-    }
+    count_dict = {}
+    for gender in ['Male', 'Female', 'Non-Binary']:
+        count_dict.update(format_count_data(count_data, gender))
     return count_dict
+
+
+def format_count_data(count_data, gender):
+    try:
+        count_data_filtered = next((
+            d for d in count_data if d[0] == gender.lower()[0]
+            ))
+        total = count_data_filtered[1]
+        normalized = round(float(count_data_filtered[2]))
+    except StopIteration:
+        total = 0
+        normalized = 0
+    return {
+            gender.lower()[0]: {
+                'Total': total,
+                'Normalized': normalized
+            }
+        }
 
 
 def load_spotipy() -> spotipy.Spotify:
