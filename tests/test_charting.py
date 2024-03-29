@@ -2,7 +2,7 @@ import json
 import logging
 import os
 
-from rcg.src import load_chart, load_spotipy, parse_spotify_chart
+from rcg.src import load_chart, load_spotipy, parse_spotify_chart, get_chart_stats
 from rcg.src.adding import add_chart_to_db
 from rcg.src.dates import get_most_recent_chart_date
 from rcg.src.db import db_query
@@ -79,3 +79,8 @@ def test_artist_added():
         "SELECT spotify_id from artist where artist_name='Doja Cat'"
     )
     assert spotify_id[0][0] == '5cj0lLjcoR7YOSnhnX0Po5'
+
+
+def test_format_data():
+    chart_stats = get_chart_stats("2023-01-01")
+    assert chart_stats['m']['Total'] == 77
