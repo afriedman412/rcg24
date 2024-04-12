@@ -1,0 +1,8 @@
+{
+    "flask": {
+        "image": ":rcg-testo.rcg-container.1",
+        "ports": {
+            "5000": "HTTP"
+        }
+    }
+}
