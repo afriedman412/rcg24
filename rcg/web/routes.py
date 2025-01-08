@@ -13,7 +13,9 @@ web_routes = Blueprint("web_routes", __name__)
 @web_routes.route("/testo")
 def testo():
     return " • ".join([
-        os.getenv(v, v) for v in ['DIVORTH??', 'LOCAL', 'MYSQL_DB', 'TODAY', 'LATEST_CHART_DATE']
+        os.getenv(v, v) for v in [
+            'DIVORTH??', 'LOCAL', 'MYSQL_DB', 'TODAY', 'LATEST_CHART_DATE'
+            ]
         ])
 
 

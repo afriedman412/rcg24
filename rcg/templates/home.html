@@ -13,6 +13,15 @@
                     Caviar</a> Gender Tracker
             </h1>
             <h2 class="site-title">{{ chart_date }}</h2>
+            <h3 class="spacer">News: It looks like Spotify is <a
+                    href="https://developer.spotify.com/blog/2024-11-27-changes-to-the-web-api">no
+                    longer allowing API access to some playlists</a>,
+                including
+                Rap Caviar, so this project is on hold until further notice.
+                I
+                will be building a dashboard for the existing ~2 years of
+                data.</h3>
+
             <ul class="spacer">
                 <li><a href="#Tally">Breakdown by artist</a></li>
                 <li><a href="#FullChart">Current chart</a></li>
@@ -23,7 +32,8 @@
                 {% for g in ['Male', 'Female', 'Non-Binary'] %}
                 <h4 class="site-title">
                     <span class="{{ g }}">
-                        {{ g }}: </span>{{ count_data.get(g[0].lower())['Total'] }} Credits
+                        {{ g }}: </span>{{ count_data.get(g[0].lower())['Total']
+                    }} Credits
                     ({{ count_data.get(g[0].lower())['Normalized'] }}%)</h4>
                 {% endfor %}
             </div>
@@ -59,9 +69,9 @@
             {% for track in chart_w_features %}
             {% set class="even" if loop.index % 2 == 0 else "odd" %}
             {% for i in ['song_name', 'primary_artist_name', 'features'] %}
-                <div class="grid-item {{class}} g{{loop.index}}">
-                    <span class="tally-artist">{{ track[i] }}</span>
-                </div>
+            <div class="grid-item {{class}} g{{loop.index}}">
+                <span class="tally-artist">{{ track[i] }}</span>
+            </div>
             {% endfor %}
             {% endfor %}
 
